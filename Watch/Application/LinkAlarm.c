@@ -7,7 +7,7 @@
 #include "FreeRTOS.h"
 #include "Queue.h"
 #include "MessageQueues.h"
-
+#include "Icons.h"
 
 static unsigned char nvLinkAlarmEnable;
 
@@ -66,3 +66,16 @@ void GenerateLinkAlarm(void)
 
   RouteMsg(&pMsg);
 }
+
+unsigned char const *LinkAlarmIcon(void)
+{
+	  if ( QueryLinkAlarmEnable() )
+	  {
+	    return pLinkAlarmOnIcon;
+	  }
+	  else
+	  {
+	    return pLinkAlarmOffIcon;
+	  }
+}
+

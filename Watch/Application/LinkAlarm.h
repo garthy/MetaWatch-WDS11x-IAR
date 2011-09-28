@@ -6,5 +6,6 @@ unsigned char QueryLinkAlarmEnable(void);
 void ToggleLinkAlarmEnable(void);
 void GenerateLinkAlarm(void);
 void SaveLinkAlarmEnable(void);
+unsigned char const *LinkAlarmIcon(void);
 
 #endif /* METAWATCH_LINK_ALARM_H */

@@ -5,6 +5,7 @@
 #include "MessageQueues.h"
 #include "SerialProfile.h"
 #include "Bluetooth.h"
+#include "Icons.h"
 
 
 void bluetooth_toggle_bluetooth(void)
@@ -26,6 +27,18 @@ void bluetooth_toggle_bluetooth(void)
       RouteMsg(&pOutgoingMsg);
       }
 }
+unsigned char const * bluetooth_get_status_icon()
+{
+	if ( QueryConnectionState() == Initializing )
+	{
+	    return pBluetoothInitIcon;
+	}
+	else if ( QueryBluetoothOn() )
+	{
+	    return pBluetoothOnIcon;
+	}
+	return pBluetoothOffIcon;
+}
 
 void bluetooth_toggle_discoverability(void)
 {
@@ -45,6 +58,19 @@ void bluetooth_toggle_discoverability(void)
 	    }
 	    RouteMsg(&pOutgoingMsg);
 	}
+}
+
+unsigned char const * bluetooth_get_discoverability_icon(void)
+{
+	if ( QueryConnectionState() == Initializing )
+	{
+		return pPairableInitIcon;
+	}
+	else if ( QueryDiscoverable() )
+	{
+	return pPairableIcon;
+	}
+	return pUnpairableIcon;
 }
 
 void bluetooth_toggle_secure_smiple_pairing(void)

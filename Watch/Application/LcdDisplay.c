@@ -52,6 +52,7 @@
 #include "Display.h"
 #include "LcdDisplay.h"
 #include "Bluetooth.h"
+#include "LinkAlarm.h"
 
 #define DISPLAY_TASK_QUEUE_LENGTH 8
 #define DISPLAY_TASK_STACK_DEPTH	(configMINIMAL_STACK_DEPTH + 90)    
@@ -1575,60 +1576,19 @@ static void MenuModeHandler(unsigned char MsgOptions)
 
 static void DrawMenu1(void)
 {
-  unsigned char const * pIcon;
-  
-  if ( QueryConnectionState() == Initializing )
-  {
-    pIcon = pPairableInitIcon;
-  }
-  else if ( QueryDiscoverable() )
-  {
-    pIcon = pPairableIcon;
-  }
-  else
-  {
-    pIcon = pUnpairableIcon;
-  }
-
-  CopyColumnsIntoMyBuffer(pIcon,
+  CopyColumnsIntoMyBuffer(bluetooth_get_discoverability_icon(),
                           BUTTON_ICON_A_F_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS); 
-  
-  /***************************************************************************/
-  
-  if ( QueryConnectionState() == Initializing )
-  {
-    pIcon = pBluetoothInitIcon;
-  }
-  else if ( QueryBluetoothOn() )
-  {
-    pIcon = pBluetoothOnIcon;
-  }
-  else
-  {
-    pIcon = pBluetoothOffIcon;  
-  }
-                          
-  CopyColumnsIntoMyBuffer(pIcon,
+
+  CopyColumnsIntoMyBuffer(bluetooth_get_status_icon(),
                           BUTTON_ICON_A_F_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           RIGHT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);  
 
-  /***************************************************************************/
-  
-  if ( QueryLinkAlarmEnable() )
-  {
-    pIcon = pLinkAlarmOnIcon;
-  }
-  else
-  {
-    pIcon = pLinkAlarmOffIcon; 
-  }
-  
-  CopyColumnsIntoMyBuffer(pIcon,
+  CopyColumnsIntoMyBuffer(LinkAlarmIcon(),
                           BUTTON_ICON_B_E_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
@@ -2546,37 +2506,37 @@ static void ConfigureIdleUserInterfaceButtons(void)
       
     case Menu1Page:
       
-      EnableButtonAction(IDLE_MODE,
-                         SW_F_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_TOGGLE_DISCOVERABILITY);
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_E_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_TOGGLE_LINK_ALARM);
-      
-      /* led is already assigned */
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_C_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_EXIT);
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_B_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuModeMsg,
-                         MENU_MODE_OPTION_PAGE2);
+        EnableButtonAction(IDLE_MODE,
+                           SW_F_INDEX,
+                           BUTTON_STATE_IMMEDIATE,
+                           MenuButtonMsg,
+                           MENU_BUTTON_OPTION_TOGGLE_DISCOVERABILITY);
 
-      EnableButtonAction(IDLE_MODE,
-                         SW_A_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_TOGGLE_BLUETOOTH);
+        EnableButtonAction(IDLE_MODE,
+                           SW_E_INDEX,
+                           BUTTON_STATE_IMMEDIATE,
+                           MenuButtonMsg,
+                           MENU_BUTTON_OPTION_TOGGLE_LINK_ALARM);
+
+        /* led is already assigned */
+
+        EnableButtonAction(IDLE_MODE,
+                           SW_C_INDEX,
+                           BUTTON_STATE_IMMEDIATE,
+                           MenuButtonMsg,
+                           MENU_BUTTON_OPTION_EXIT);
+
+        EnableButtonAction(IDLE_MODE,
+                           SW_B_INDEX,
+                           BUTTON_STATE_IMMEDIATE,
+                           MenuModeMsg,
+                           MENU_MODE_OPTION_PAGE2);
+
+        EnableButtonAction(IDLE_MODE,
+                           SW_A_INDEX,
+                           BUTTON_STATE_IMMEDIATE,
+                           MenuButtonMsg,
+                           MENU_BUTTON_OPTION_TOGGLE_BLUETOOTH);
       
       break;
       
