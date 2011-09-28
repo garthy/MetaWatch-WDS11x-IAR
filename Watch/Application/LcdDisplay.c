@@ -1595,6 +1595,15 @@ static void DrawMenu1(void)
                           BUTTON_ICON_SIZE_IN_COLUMNS); 
 }
 
+unsigned char const *RstPinIcon(void)
+{
+	if ( QueryRstPinEnabled() )
+	{
+	    return  pRstPinIcon;
+	}
+	return pNmiPinIcon;
+}
+
 static void DrawMenu2(void)
 {
   /* top button is always soft reset */
@@ -1604,53 +1613,42 @@ static void DrawMenu2(void)
                           LEFT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);
   
-  unsigned char const * pIcon;
+
   
-  if ( QueryRstPinEnabled() )
-  {
-    pIcon = pRstPinIcon;
-  }
-  else
-  {
-    pIcon = pNmiPinIcon;
-  }
-  
-  CopyColumnsIntoMyBuffer(pIcon,
+  CopyColumnsIntoMyBuffer(RstPinIcon(),
                           BUTTON_ICON_A_F_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           RIGHT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS); 
   
-  /***************************************************************************/
-  
-  if ( QueryConnectionState() == Initializing )
-  {
-    pIcon = pSspInitIcon;
-  }
-  else if ( QuerySecureSimplePairingEnabled() )
-  {
-    pIcon = pSspEnabledIcon;
-  }
-  else
-  { 
-    pIcon = pSspDisabledIcon;
-  }
-
-  CopyColumnsIntoMyBuffer(pIcon,
+  CopyColumnsIntoMyBuffer(bluetooth_get_secure_smiple_pairing_icon(),
                           BUTTON_ICON_B_E_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);   
-  
+}
+
+unsigned char const * SecondsIcon(void)
+{
+	if ( nvDisplaySeconds )
+	{
+	    return pSecondsOnMenuIcon;
+	}
+	return  pSecondsOffMenuIcon;
+
+}
+unsigned char const * TimeFormatIcon(void)
+{
+	if(GetTimeFormat() == TWELVE_HOUR)
+	{
+		return hour24;
+	}
+	return hour12;
 }
 
 static void DrawMenu3(void)
 {
-  unsigned char const * pIcon;
-  
-  pIcon = pNormalDisplayMenuIcon;
-
-  CopyColumnsIntoMyBuffer(pIcon,
+  CopyColumnsIntoMyBuffer(pNormalDisplayMenuIcon,
                           BUTTON_ICON_A_F_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
@@ -1667,30 +1665,16 @@ static void DrawMenu3(void)
 #endif
   /***************************************************************************/
   
-  if ( nvDisplaySeconds )
-  {
-    pIcon = pSecondsOnMenuIcon;
-  }
-  else
-  { 
-    pIcon = pSecondsOffMenuIcon;
-  }
 
-  CopyColumnsIntoMyBuffer(pIcon,
+
+  CopyColumnsIntoMyBuffer(SecondsIcon(),
                           BUTTON_ICON_B_E_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);   
   
-  if(GetTimeFormat() == TWELVE_HOUR)
-  {
-	  pIcon = hour24;
-  }
-  else
-  {
-	  pIcon = hour12;
-  }
-  CopyColumnsIntoMyBuffer(pIcon,
+
+  CopyColumnsIntoMyBuffer(TimeFormatIcon(),
 	                      BUTTON_ICON_A_F_ROW,
 	                      BUTTON_ICON_SIZE_IN_ROWS,
 	                      RIGHT_BUTTON_COLUMN,
