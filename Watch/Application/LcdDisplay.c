@@ -1937,9 +1937,15 @@ static void DisplayDayOfWeek(void)
   int DayOfWeek = GetRTCDOW();
   
   unsigned char const *pFoo = DaysOfWeek[DayOfWeek];
-    
-  WriteFoo(pFoo,10,8);
-  
+  if ( GetTimeFormat() == TWELVE_HOUR ) 
+  {  
+    WriteFoo(pFoo,10,8);
+  }
+  else
+  {
+	// move it up so we can fit the year
+    WriteFoo(pFoo,0,8);
+  }
 }
 
 /* add a '/' between the month and day */
@@ -1960,6 +1966,31 @@ static void DisplayDataSeparator(unsigned char RowOffset,
   
 }
 
+static void DisplayYear(int year, unsigned char row, unsigned char col)
+{
+	  unsigned int bar = 1000;
+	  unsigned int temp = 0;
+
+	  for ( unsigned char i = 0; i < 4; i++ )
+	  {
+	    temp = year / bar;
+	    WriteSpriteDigit(temp,row,col+i,0);
+	    year = year % bar;
+	    bar = bar / 10;
+	  }
+}
+
+static void DisplayDayMonth(int First, int Second,  unsigned char row)
+{
+	/* shift bit so that it lines up with AM/PM and Day of Week */
+	WriteSpriteDigit(First / 10, row, 8, -1);
+	/* shift the bits so we can fit a / in the middle */
+	WriteSpriteDigit(First % 10, row, 9, -1);
+	WriteSpriteDigit(Second / 10, row, 10, 1);
+	WriteSpriteDigit(Second % 10, row, 11, 0);
+	DisplayDataSeparator(row, 9);
+}
+
 static void DisplayDate(void)
 {
   if ( QueryFirstContact() )
@@ -1978,14 +2009,18 @@ static void DisplayDate(void)
       First = GetRTCDAY();
       Second = GetRTCMON();
     }
-    
-    /* shift bit so that it lines up with AM/PM and Day of Week */
-    WriteSpriteDigit(First/10,20,8,-1);
-    /* shift the bits so we can fit a / in the middle */
-    WriteSpriteDigit(First%10,20,9,-1);
-    WriteSpriteDigit(Second/10,20,10,1);
-    WriteSpriteDigit(Second%10,20,11,0);
-    DisplayDataSeparator(20,9);
+    if ( GetTimeFormat() == TWELVE_HOUR )
+    {
+    	DisplayDayMonth(First, Second, 20);
+    }
+    else
+    {
+    	int year = GetRTCYEAR();
+    	DisplayDayMonth(First, Second, 10);
+
+    	/* Write the year */
+    	DisplayYear(year, 20, 8);
+    }
   }
 }
 
