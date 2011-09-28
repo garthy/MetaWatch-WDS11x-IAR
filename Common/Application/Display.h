@@ -111,8 +111,20 @@ void InitializeDateFormat(void);
 /*! \return Time Format TWELVE_HOUR = 0, TWENTY_FOUR_HOUR = 1 */
 unsigned char GetTimeFormat(void);
 
+/* swaps the time format */
+void ToggleTimeFormat(void);
+
+/* Saves the time format to NV */
+void SaveTimeFormat(void);
+
 /*! \return date format MONTH_FIRST = 0, DAY_FIRST = 1 */
 unsigned char GetDateFormat(void);
+
+/* Swaps the date format */
+void ToggleDateFormat(void);
+
+/* Saves the date format to NV */
+void SaveDateFormat(void);
 
 /******************************************************************************/
 

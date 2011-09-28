@@ -161,25 +161,66 @@ void InitializeTimeFormat(void)
 
 }
 
-void InitializeDateFormat(void)
-{
-  nvDateFormat = DAY_FIRST;
-  
-  OsalNvItemInit(NVID_DATE_FORMAT, 
-                 sizeof(nvDateFormat), 
-                 &nvDateFormat);
-  
-}
-
 unsigned char GetTimeFormat(void)
 {
-  return nvTimeFormat;  
+  return nvTimeFormat;
+}
+
+void ToggleTimeFormat(void)
+{
+  if ( nvTimeFormat == 1 )
+  {
+	  nvTimeFormat = 0;
+  }
+  else
+  {
+	  nvTimeFormat = 1;
+  }
+}
+
+void SaveTimeFormat(void)
+{
+	  osal_nv_write(NVID_TIME_FORMAT,
+		                NV_ZERO_OFFSET,
+		                sizeof(nvTimeFormat),
+		                &nvTimeFormat);
+}
+
+void InitializeDateFormat(void)
+{
+	nvDateFormat = DAY_FIRST;
+
+    OsalNvItemInit(NVID_DATE_FORMAT,
+                 sizeof(nvDateFormat), 
+                 &nvDateFormat);
 }
 
 unsigned char GetDateFormat(void)
 {
   return nvDateFormat;
 }
+
+void ToggleDateFormat(void)
+{
+  if ( nvDateFormat == 1 )
+  {
+	  nvDateFormat = 0;
+  }
+  else
+  {
+	  nvDateFormat = 1;
+  }
+}
+
+void SaveDateFormat(void)
+{
+	osal_nv_write(NVID_DATE_FORMAT,
+	              NV_ZERO_OFFSET,
+	              sizeof(nvDateFormat),
+	              &nvDateFormat);
+}
+
+
 
 /******************************************************************************/
 
@@ -192,31 +233,31 @@ unsigned char QueryLinkAlarmEnable(void)
 
 void ToggleLinkAlarmEnable(void)
 {
-  if ( nvLinkAlarmEnable == 1 )
-  {
-    nvLinkAlarmEnable = 0;
-  }
-  else
-  {
-    nvLinkAlarmEnable = 1;  
-  }
+	  if ( nvLinkAlarmEnable == 1 )
+	  {
+	    nvLinkAlarmEnable = 0;
+	  }
+	  else
+	  {
+	    nvLinkAlarmEnable = 1;
+	  }
 }
 
 void InitializeLinkAlarmEnable(void)
 {
-  nvLinkAlarmEnable = 1;
-  OsalNvItemInit(NVID_LINK_ALARM_ENABLE, 
-                 sizeof(nvLinkAlarmEnable), 
-                 &nvLinkAlarmEnable);
+	  nvLinkAlarmEnable = 1;
+	  OsalNvItemInit(NVID_LINK_ALARM_ENABLE,
+	                 sizeof(nvLinkAlarmEnable),
+	                 &nvLinkAlarmEnable);
     
 }
 
 void SaveLinkAlarmEnable(void)
 {
-  osal_nv_write(NVID_LINK_ALARM_ENABLE,
-                NV_ZERO_OFFSET,
-                sizeof(nvLinkAlarmEnable),
-                &nvLinkAlarmEnable);
+	  osal_nv_write(NVID_LINK_ALARM_ENABLE,
+		                NV_ZERO_OFFSET,
+		                sizeof(nvLinkAlarmEnable),
+		                &nvLinkAlarmEnable);
 }
 
 
