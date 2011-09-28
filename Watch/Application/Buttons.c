@@ -37,7 +37,7 @@
 #include "BufferPool.h"
 #include "Buttons.h"
 #include "DebugUart.h"
-#include "SerialProfile.h"
+//#include "SerialProfile.h"
 #include "Utilities.h"
 #include "MessageQueues.h"
 #include "Display.h"

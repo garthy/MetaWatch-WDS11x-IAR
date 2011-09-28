@@ -50,7 +50,8 @@
 #include "Icons.h"
 #include "Fonts.h"
 #include "Display.h"
-#include "LcdDisplay.h"   
+#include "LcdDisplay.h"
+#include "Bluetooth.h"
 
 #define DISPLAY_TASK_QUEUE_LENGTH 8
 #define DISPLAY_TASK_STACK_DEPTH	(configMINIMAL_STACK_DEPTH + 90)    
@@ -81,7 +82,8 @@ static void ConfigureIdleBuferSizeHandler(tHostMsg* pMsg);
 static void ModifyTimeHandler(tHostMsg* pMsg);
 static void MenuModeHandler(unsigned char MsgOptions);
 static void MenuButtonHandler(unsigned char MsgOptions);
-static void ToggleSecondsHandler(unsigned char MsgOptions);
+static void ToggleSecondsHandler();
+static void ToggleIdleBufferInvert(void);
 static void ConnectionStateChangeHandler(void);
 
 /******************************************************************************/
@@ -400,7 +402,8 @@ static void DisplayQueueMessageHandler(tHostMsg* pMsg)
     break;
       
   case ToggleSecondsMsg:
-    ToggleSecondsHandler(pMsg->Options);
+    ToggleSecondsHandler();
+    IdleUpdateHandler();
     break;
   
   case SplashTimeoutMsg:
@@ -1766,28 +1769,22 @@ static void MenuButtonHandler(unsigned char MsgOptions)
   switch (MsgOptions)
   {
   case MENU_BUTTON_OPTION_TOGGLE_DISCOVERABILITY:
-    
-    if ( QueryConnectionState() != Initializing )
-    {
-      BPL_AllocMessageBuffer(&pOutgoingMsg);
-      pOutgoingMsg->Type = PariringControlMsg;
-        
-      if ( QueryDiscoverable() )
-      {
-        pOutgoingMsg->Options = PAIRING_CONTROL_OPTION_DISABLE_PAIRING;
-      }
-      else
-      {
-        pOutgoingMsg->Options = PAIRING_CONTROL_OPTION_ENABLE_PAIRING;  
-      }
-      
-      RouteMsg(&pOutgoingMsg);
-    }
-    /* screen will be updated with a message from spp */
+	/* screen will be updated with a message from spp */
+	bluetooth_toggle_discoverability();
+	break;
+
+  case MENU_BUTTON_OPTION_TOGGLE_BLUETOOTH:
+	/* screen will be updated with a message from spp */
+	bluetooth_toggle_bluetooth();
+	break;
+
+  case MENU_BUTTON_OPTION_TOGGLE_SECURE_SIMPLE_PAIRING:
+	/* screen will be updated with a message from spp */
+	bluetooth_toggle_secure_smiple_pairing();
     break;
     
   case MENU_BUTTON_OPTION_TOGGLE_LINK_ALARM:
-    ToggleLinkAlarmEnable();
+	ToggleLinkAlarmEnable();
     MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
     break;
   
@@ -1812,36 +1809,9 @@ static void MenuButtonHandler(unsigned char MsgOptions)
     
     break;
     
-  case MENU_BUTTON_OPTION_TOGGLE_BLUETOOTH:
+
     
-    if ( QueryConnectionState() != Initializing )
-    {
-      BPL_AllocMessageBuffer(&pOutgoingMsg);
-        
-      if ( QueryBluetoothOn() )
-      {
-        pOutgoingMsg->Type = TurnRadioOffMsg;
-      }
-      else
-      {
-        pOutgoingMsg->Type = TurnRadioOnMsg;
-      }
-      
-      RouteMsg(&pOutgoingMsg);
-      }
-    /* screen will be updated with a message from spp */
-    break;
-    
-  case MENU_BUTTON_OPTION_TOGGLE_SECURE_SIMPLE_PAIRING:
-    if ( QueryConnectionState() != Initializing )
-    {
-      BPL_AllocMessageBuffer(&pOutgoingMsg);
-      pOutgoingMsg->Type = PariringControlMsg;
-      pOutgoingMsg->Options = PAIRING_CONTROL_OPTION_TOGGLE_SSP;
-      RouteMsg(&pOutgoingMsg);
-    }
-    /* screen will be updated with a message from spp */
-    break;
+
     
   case MENU_BUTTON_OPTION_TOGGLE_RST_NMI_PIN:
     if ( QueryRstPinEnabled() )
@@ -1856,19 +1826,12 @@ static void MenuButtonHandler(unsigned char MsgOptions)
     break;
     
   case MENU_BUTTON_OPTION_DISPLAY_SECONDS:
-    ToggleSecondsHandler(TOGGLE_SECONDS_OPTIONS_DONT_UPDATE_IDLE);
+    ToggleSecondsHandler();
     MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
     break;
     
   case MENU_BUTTON_OPTION_INVERT_DISPLAY:
-    if ( nvIdleBufferInvert == 1 )
-    {
-      nvIdleBufferInvert = 0;
-    }
-    else
-    {
-      nvIdleBufferInvert = 1;
-    }
+	ToggleIdleBufferInvert();
     MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
     break;
     
@@ -1880,27 +1843,9 @@ static void MenuButtonHandler(unsigned char MsgOptions)
   default:
     break;
   }
-
-   
 }
 
-static void ToggleSecondsHandler(unsigned char Options)
-{
-  if ( nvDisplaySeconds == 0 )
-  {
-    nvDisplaySeconds = 1;  
-  }
-  else
-  {
-    nvDisplaySeconds = 0;  
-  }
 
-  if ( Options == TOGGLE_SECONDS_OPTIONS_UPDATE_IDLE )
-  {
-	  IdleUpdateHandler();
-  }
-  
-}
 
 static void AddDecimalPoint8w10h(unsigned char RowOffset,
                                  unsigned char ColumnOffset)
@@ -2898,24 +2843,21 @@ static void InitializeIdleBufferInvert(void)
                  &nvIdleBufferInvert);   
 }
 
-static void InitializeDisplaySeconds(void)
+static void ToggleIdleBufferInvert(void)
 {
-  nvDisplaySeconds = 0;
-  OsalNvItemInit(NVID_DISPLAY_SECONDS, 
-                 sizeof(nvDisplaySeconds), 
-                 &nvDisplaySeconds);
-    
+	if ( nvIdleBufferInvert == 1 )
+	{
+		nvIdleBufferInvert = 0;
+	}
+	else
+	{
+		nvIdleBufferInvert = 1;
+	}
 }
-
-#if 0
-static void SaveIdleBufferConfig(void)
+unsigned char QueryInvertDisplay(void)
 {
-  osal_nv_write(NVID_IDLE_BUFFER_CONFIGURATION, 
-                NV_ZERO_OFFSET,
-                sizeof(nvIdleBufferConfig), 
-                &nvIdleBufferConfig);    
+  return nvIdleBufferInvert;
 }
-#endif
 
 static void SaveIdleBufferInvert(void)
 {
@@ -2923,6 +2865,26 @@ static void SaveIdleBufferInvert(void)
                 NV_ZERO_OFFSET,
                 sizeof(nvIdleBufferInvert), 
                 &nvIdleBufferInvert);   
+}
+
+static void InitializeDisplaySeconds(void)
+{
+  nvDisplaySeconds = 0;
+  OsalNvItemInit(NVID_DISPLAY_SECONDS,
+                 sizeof(nvDisplaySeconds),
+                 &nvDisplaySeconds);
+}
+
+static void ToggleSecondsHandler(void)
+{
+	if ( nvDisplaySeconds == 0 )
+	{
+		nvDisplaySeconds = 1;
+	}
+	else
+	{
+		nvDisplaySeconds = 0;
+	}
 }
 
 static void SaveDisplaySeconds(void)
@@ -2933,10 +2895,18 @@ static void SaveDisplaySeconds(void)
 	                &nvDisplaySeconds);
 }
 
-unsigned char QueryInvertDisplay(void)
+
+#if 0
+static void SaveIdleBufferConfig(void)
 {
-  return nvIdleBufferInvert; 
+  osal_nv_write(NVID_IDLE_BUFFER_CONFIGURATION,
+                NV_ZERO_OFFSET,
+                sizeof(nvIdleBufferConfig),
+                &nvIdleBufferConfig);
 }
+#endif
+
+
 
 #ifdef FONT_TESTING
 static unsigned int CharacterMask;
