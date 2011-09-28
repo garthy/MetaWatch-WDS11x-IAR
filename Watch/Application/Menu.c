@@ -6,18 +6,13 @@
 #include "BufferPool.h"
 #include "Buttons.h"
 #include "hal_lpm.h"
-#include "Menus.h"
 #include "MessageQueues.h"
-
-
 #include "Bluetooth.h"
 #include "LinkAlarm.h"
 #include "Display.h"
-#include "Buttons.h"
 #include "Icons.h"
-#include "hal_lpm.h"
 #include "Menu.h"
-
+#include "Menus.h"
 
 #include "hal_board_type.h"
 //#include "hal_rtc.h"
@@ -59,7 +54,6 @@ void menu_push(struct menu const *m)
 	}
 }
 
-
 struct menu const *  menu_current(void)
 {
 	return menustack[pos];
@@ -85,9 +79,8 @@ unsigned char const * menu_get_icon(struct menu_item const * item)
 
 int menu_button_handler(unsigned char MsgOptions)
 {
-	int refresh = 0;
-	struct menu const *m = menu_current();
-	const struct menu_item *i = &(m->items[MsgOptions]);
+	char refresh = 0;
+	const struct menu_item *i = &(menu_current()->items[MsgOptions]);
 	if(MsgOptions < 4)
 	{
 		switch(i->type)

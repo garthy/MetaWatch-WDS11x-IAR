@@ -70,4 +70,26 @@ unsigned char* GetTemplatePointer(unsigned char TemplateSelect);
  */
 unsigned char QueryIdlePageNormal(void);
 
+/* the internal buffer */
+#define STARTING_ROW                  ( 0 )
+#define WATCH_DRAWN_IDLE_BUFFER_ROWS  ( 30 )
+#define PHONE_IDLE_BUFFER_ROWS        ( 66 )
+
+// Called before anyupdates to the screen
+void StopAllDisplayTimers(void);
+
+void FillMyBuffer(unsigned char StartingRow,
+                         unsigned char NumberOfRows,
+                         unsigned char FillValue);
+
+void CopyRowsIntoMyBuffer(unsigned char const* pImage,
+                                 unsigned char StartingRow,
+                                 unsigned char NumberOfRows);
+
+void CopyColumnsIntoMyBuffer(unsigned char const* pImage,
+                                    unsigned char StartingRow,
+                                    unsigned char NumberOfRows,
+                                    unsigned char StartingColumn,
+                                    unsigned char NumberOfColumns);
+
 #endif /* LCD_DISPLAY_H */
