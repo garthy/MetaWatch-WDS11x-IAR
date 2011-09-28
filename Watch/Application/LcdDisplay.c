@@ -53,6 +53,9 @@
 #include "LcdDisplay.h"
 #include "Bluetooth.h"
 #include "LinkAlarm.h"
+#include "Menu.h"
+#include "Menus.h"
+
 
 #define DISPLAY_TASK_QUEUE_LENGTH 8
 #define DISPLAY_TASK_STACK_DEPTH	(configMINIMAL_STACK_DEPTH + 90)    
@@ -82,9 +85,9 @@ static void ListPairedDevicesHandler(void);
 static void ConfigureIdleBuferSizeHandler(tHostMsg* pMsg);
 static void ModifyTimeHandler(tHostMsg* pMsg);
 static void MenuModeHandler(unsigned char MsgOptions);
-static void MenuButtonHandler(unsigned char MsgOptions);
-static void ToggleSecondsHandler();
-static void ToggleIdleBufferInvert(void);
+
+void ToggleSecondsHandler();
+void ToggleIdleBufferInvert(void);
 static void ConnectionStateChangeHandler(void);
 
 /******************************************************************************/
@@ -97,12 +100,16 @@ static void SetupSplashScreenTimeout(void);
 static void AllocateDisplayTimers(void);
 static void StopAllDisplayTimers(void);
 static void DetermineIdlePage(void);
-
+#ifdef NEWMENU
+void DrawMenu(const struct menu * const menu);
+static void MenuButtonHandler(unsigned char MsgOptions);
+#else
 static void DrawMenu1(void);
 static void DrawMenu2(void);
 static void DrawMenu3(void);
-static void DrawCommonMenuIcons(void);
 
+#endif
+static void DrawCommonMenuIcons(void);
 static void FillMyBuffer(unsigned char StartingRow,
                          unsigned char NumberOfRows,
                          unsigned char FillValue);
@@ -182,13 +189,13 @@ static unsigned char nvIdleBufferInvert;
 static void InitialiazeIdleBufferConfig(void);
 static void InitializeIdleBufferInvert(void);
 
-static void SaveIdleBufferInvert(void);
+void SaveIdleBufferInvert(void);
 
 /******************************************************************************/
 
 unsigned char nvDisplaySeconds = 0;
 static void InitializeDisplaySeconds(void);
-static void SaveDisplaySeconds(void);
+void SaveDisplaySeconds(void);
 
 /******************************************************************************/
 
@@ -203,9 +210,13 @@ typedef enum
   RadioOnWithPairingInfoPage,
   RadioOnWithoutPairingInfoPage,
   BluetoothOffPage,
+#ifdef NEWMENU
+  MenuPage,
+#else
   Menu1Page,
   Menu2Page,
   Menu3Page,
+#endif
   ListPairedDevicesPage,
   WatchStatusPage,
   QrCodePage,
@@ -276,6 +287,9 @@ static void WriteFontString(unsigned char* pString);
 void InitializeDisplayTask(void)
 {
   InitMyBuffer();
+#ifdef NEWMENU
+  menu_init();
+#endif
 
   QueueHandles[DISPLAY_QINDEX] = 
     xQueueCreate( DISPLAY_TASK_QUEUE_LENGTH, MESSAGE_QUEUE_ITEM_SIZE  );
@@ -576,10 +590,13 @@ static void ConnectionStateChangeHandler(void)
     case BluetoothOffPage:
       IdleUpdateHandler();
       break;
-    
+#ifdef NEWMENU
+    case MenuPage:
+#else
     case Menu1Page:
     case Menu2Page:
     case Menu3Page:
+#endif
       MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
       break;
     
@@ -1523,7 +1540,15 @@ static void MenuModeHandler(unsigned char MsgOptions)
 
   switch (MsgOptions)
   {
-  
+#ifdef NEWMENU
+  case MENU_MODE_OPTION_PAGE1:
+  case MENU_MODE_OPTION_PAGE2:
+  case MENU_MODE_OPTION_PAGE3:
+	CurrentIdlePage = MenuPage;
+    DrawMenu(menu_current());
+    ConfigureIdleUserInterfaceButtons();
+    break;
+#else
   case MENU_MODE_OPTION_PAGE1:
     DrawMenu1();
     CurrentIdlePage = Menu1Page;
@@ -1541,9 +1566,12 @@ static void MenuModeHandler(unsigned char MsgOptions)
     CurrentIdlePage = Menu3Page;
     ConfigureIdleUserInterfaceButtons();
     break;
-  
+#endif
+    
   case MENU_MODE_OPTION_UPDATE_CURRENT_PAGE:
-  
+#ifdef NEWMENU
+    DrawMenu(menu_current());
+#else
   default:
     switch ( CurrentIdlePage )
     {
@@ -1561,8 +1589,9 @@ static void MenuModeHandler(unsigned char MsgOptions)
       break;
     }
     break;
+#endif
   }
-  
+
   /* these icons are common to all menus */
   DrawCommonMenuIcons();
   
@@ -1574,6 +1603,62 @@ static void MenuModeHandler(unsigned char MsgOptions)
   
 }
 
+/* Menu 1 -> F
+ * Menu 2 -> E
+ * Menu 3 -> D
+ * Menu 4 -> A
+ */
+
+
+unsigned char const * SecondsIcon(void)
+{
+	if ( nvDisplaySeconds )
+	{
+	    return pSecondsOnMenuIcon;
+	}
+	return  pSecondsOffMenuIcon;
+
+}
+unsigned char const * TimeFormatIcon(void)
+{
+	if(GetTimeFormat() == TWELVE_HOUR)
+	{
+		return hour24;
+	}
+	return hour12;
+}
+
+unsigned char const *RstPinIcon(void)
+{
+	if ( QueryRstPinEnabled() )
+	{
+	    return  pRstPinIcon;
+	}
+	return pNmiPinIcon;
+}
+#ifdef NEWMENU
+void DrawMenu(const struct menu * const menu)
+{
+
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[0])),
+                          BUTTON_ICON_A_F_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          LEFT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
+
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[3])),
+                          BUTTON_ICON_A_F_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          RIGHT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
+
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[1])),
+                          BUTTON_ICON_B_E_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          LEFT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
+}
+#else
 static void DrawMenu1(void)
 {
   CopyColumnsIntoMyBuffer(bluetooth_get_discoverability_icon(),
@@ -1593,15 +1678,6 @@ static void DrawMenu1(void)
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS); 
-}
-
-unsigned char const *RstPinIcon(void)
-{
-	if ( QueryRstPinEnabled() )
-	{
-	    return  pRstPinIcon;
-	}
-	return pNmiPinIcon;
 }
 
 static void DrawMenu2(void)
@@ -1628,24 +1704,6 @@ static void DrawMenu2(void)
                           BUTTON_ICON_SIZE_IN_COLUMNS);   
 }
 
-unsigned char const * SecondsIcon(void)
-{
-	if ( nvDisplaySeconds )
-	{
-	    return pSecondsOnMenuIcon;
-	}
-	return  pSecondsOffMenuIcon;
-
-}
-unsigned char const * TimeFormatIcon(void)
-{
-	if(GetTimeFormat() == TWELVE_HOUR)
-	{
-		return hour24;
-	}
-	return hour12;
-}
-
 static void DrawMenu3(void)
 {
   CopyColumnsIntoMyBuffer(pNormalDisplayMenuIcon,
@@ -1665,8 +1723,6 @@ static void DrawMenu3(void)
 #endif
   /***************************************************************************/
   
-
-
   CopyColumnsIntoMyBuffer(SecondsIcon(),
                           BUTTON_ICON_B_E_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
@@ -1679,9 +1735,8 @@ static void DrawMenu3(void)
 	                      BUTTON_ICON_SIZE_IN_ROWS,
 	                      RIGHT_BUTTON_COLUMN,
 	                      BUTTON_ICON_SIZE_IN_COLUMNS);
-
-
 }
+#endif /* NEWMENU */
 
 static void DrawCommonMenuIcons(void)
 {
@@ -1708,8 +1763,14 @@ static void MenuButtonHandler(unsigned char MsgOptions)
 {
   StopAllDisplayTimers();
 
+
+#ifdef NEWMENU
+	if(menu_button_handler(MsgOptions))
+	{
+		MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
+	}
+#else
   tHostMsg* pOutgoingMsg;
-  
   switch (MsgOptions)
   {
   case MENU_BUTTON_OPTION_TOGGLE_DISCOVERABILITY:
@@ -1724,69 +1785,60 @@ static void MenuButtonHandler(unsigned char MsgOptions)
 
   case MENU_BUTTON_OPTION_TOGGLE_SECURE_SIMPLE_PAIRING:
 	/* screen will be updated with a message from spp */
-	bluetooth_toggle_secure_smiple_pairing();
+	  bluetooth_toggle_secure_smiple_pairing();
     break;
     
   case MENU_BUTTON_OPTION_TOGGLE_LINK_ALARM:
 	ToggleLinkAlarmEnable();
-    MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
+	MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
     break;
   
   case MENU_BUTTON_OPTION_EXIT:          
     
-    /* save all of the non-volatile items */
-    BPL_AllocMessageBuffer(&pOutgoingMsg);
-    pOutgoingMsg->Type = PariringControlMsg;
-    pOutgoingMsg->Options = PAIRING_CONTROL_OPTION_SAVE_SPP;
-    RouteMsg(&pOutgoingMsg);
-    
-    SaveLinkAlarmEnable();
-    SaveRstNmiConfiguration();
-    SaveIdleBufferInvert();
-    SaveDisplaySeconds();
-    SaveTimeFormat();
-      
-    /* go back to the normal idle screen */
-    BPL_AllocMessageBuffer(&pOutgoingMsg);
-    pOutgoingMsg->Type = IdleUpdate;
-    RouteMsg(&pOutgoingMsg);
+		/* Only save stuff if it's been changed */
+	    /* save all of the non-volatile items */
+	    BPL_AllocMessageBuffer(&pOutgoingMsg);
+	    pOutgoingMsg->Type = PariringControlMsg;
+	    pOutgoingMsg->Options = PAIRING_CONTROL_OPTION_SAVE_SPP;
+	    RouteMsg(&pOutgoingMsg);
+
+	    SaveLinkAlarmEnable();
+	    SaveRstNmiConfiguration();
+	    SaveIdleBufferInvert();
+	    SaveDisplaySeconds();
+	    SaveTimeFormat();
+
+	    /* go back to the normal idle screen */
+	    BPL_AllocMessageBuffer(&pOutgoingMsg);
+	    pOutgoingMsg->Type = IdleUpdate;
+	    RouteMsg(&pOutgoingMsg);
     
     break;
     
-
-    
-
-    
   case MENU_BUTTON_OPTION_TOGGLE_RST_NMI_PIN:
-    if ( QueryRstPinEnabled() )
-    {
-      DisableRstPin();
-    }
-    else
-    {
-      EnableRstPin(); 
-    }
+	  ToggleRstPin();
     MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
     break;
     
   case MENU_BUTTON_OPTION_DISPLAY_SECONDS:
-    ToggleSecondsHandler();
+	  ToggleSecondsHandler();
     MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
     break;
     
   case MENU_BUTTON_OPTION_INVERT_DISPLAY:
-	ToggleIdleBufferInvert();
+	  ToggleIdleBufferInvert();
     MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
     break;
     
   case MENU_BUTTON_OPTION_TOGGLE_HOUR_DISPLAY:
-	ToggleTimeFormat();
+	  ToggleTimeFormat();
     MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
     break;
 
   default:
     break;
   }
+#endif /* NEWMENU */
 }
 
 
@@ -2488,8 +2540,12 @@ static void ConfigureIdleUserInterfaceButtons(void)
       
       
       
+
+#ifdef NEWMENU
+    case MenuPage:
+    	menu_config_buttons();
+#else
     case Menu1Page:
-      
         EnableButtonAction(IDLE_MODE,
                            SW_F_INDEX,
                            BUTTON_STATE_IMMEDIATE,
@@ -2521,7 +2577,7 @@ static void ConfigureIdleUserInterfaceButtons(void)
                            BUTTON_STATE_IMMEDIATE,
                            MenuButtonMsg,
                            MENU_BUTTON_OPTION_TOGGLE_BLUETOOTH);
-      
+
       break;
       
     case Menu2Page:
@@ -2557,13 +2613,11 @@ static void ConfigureIdleUserInterfaceButtons(void)
                          SW_A_INDEX,
                          BUTTON_STATE_IMMEDIATE,
                          MenuButtonMsg,
-                         MENU_BUTTON_OPTION_TOGGLE_RST_NMI_PIN);
-      
+                        MENU_BUTTON_OPTION_TOGGLE_RST_NMI_PIN);
       break;
     
       
     case Menu3Page:
-      
       EnableButtonAction(IDLE_MODE,
                          SW_F_INDEX,
                          BUTTON_STATE_IMMEDIATE,
@@ -2600,12 +2654,14 @@ static void ConfigureIdleUserInterfaceButtons(void)
                          EnterShippingModeMsg,
                          NO_MSG_OPTIONS);
 #else
+
       EnableButtonAction(IDLE_MODE,
                          SW_A_INDEX,
                          BUTTON_STATE_IMMEDIATE,
                          MenuButtonMsg,
                          MENU_BUTTON_OPTION_TOGGLE_HOUR_DISPLAY);
-#endif      
+#endif
+#endif /* NEWMENU */
       break;
       
     case ListPairedDevicesPage:
@@ -2787,7 +2843,7 @@ static void InitializeIdleBufferInvert(void)
                  &nvIdleBufferInvert);   
 }
 
-static void ToggleIdleBufferInvert(void)
+void ToggleIdleBufferInvert(void)
 {
 	if ( nvIdleBufferInvert == 1 )
 	{
@@ -2803,7 +2859,7 @@ unsigned char QueryInvertDisplay(void)
   return nvIdleBufferInvert;
 }
 
-static void SaveIdleBufferInvert(void)
+void SaveIdleBufferInvert(void)
 {
   osal_nv_write(NVID_IDLE_BUFFER_INVERT,
                 NV_ZERO_OFFSET,
@@ -2819,7 +2875,7 @@ static void InitializeDisplaySeconds(void)
                  &nvDisplaySeconds);
 }
 
-static void ToggleSecondsHandler(void)
+void ToggleSecondsHandler(void)
 {
 	if ( nvDisplaySeconds == 0 )
 	{
@@ -2831,7 +2887,7 @@ static void ToggleSecondsHandler(void)
 	}
 }
 
-static void SaveDisplaySeconds(void)
+void SaveDisplaySeconds(void)
 {
 	  osal_nv_write(NVID_DISPLAY_SECONDS,
 	                NV_ZERO_OFFSET,

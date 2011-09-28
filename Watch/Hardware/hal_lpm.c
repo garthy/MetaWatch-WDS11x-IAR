@@ -189,6 +189,18 @@ unsigned char QueryRstPinEnabled(void)
   return ( nvRstNmiConfiguration == RST_PIN_ENABLED );  
 }
 
+void ToggleRstPin(void)
+{
+    if ( QueryRstPinEnabled() )
+    {
+      DisableRstPin();
+    }
+    else
+    {
+      EnableRstPin();
+    }
+}
+
 void ConfigureResetPinFunction(unsigned char Control)
 {
   switch (Control)

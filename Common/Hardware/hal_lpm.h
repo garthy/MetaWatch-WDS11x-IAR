@@ -57,6 +57,9 @@ void SoftwareReset(void);
  */
 unsigned char QueryRstPinEnabled(void);
 
+/*! Swaps reset pin */
+void ToggleRstPin(void);
+
 /*! Configure the reset pin functionality */
 void ConfigureResetPinFunction(unsigned char Control);
 
