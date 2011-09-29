@@ -259,7 +259,7 @@ MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
 MENU_DYNAMIC_ICON_ACTION(TimeFormatIcon, ToggleTimeFormat, MENU_FLAG_UPDATE)
 MENU_END
 
-extern const struct menu dev2;
+MENU_DEF(dev2)
 
 MENU_START_WITH_NEXT(dev, dev2)
 MENU_STATIC_ICON_ACTION(pNormalDisplayMenuIcon,ToggleIdleBufferInvert, MENU_FLAG_UPDATE)

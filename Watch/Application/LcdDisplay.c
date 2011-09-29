@@ -183,6 +183,7 @@ void SaveIdleBufferInvert(void);
 
 unsigned char nvDisplaySeconds = 0;
 static void InitializeDisplaySeconds(void);
+
 void SaveDisplaySeconds(void);
 
 /******************************************************************************/
@@ -370,10 +371,15 @@ static void DisplayQueueMessageHandler(tHostMsg* pMsg)
     break;
  
   case BarCode:
-	  IdlePageQrCodeButtonHandler(pMsg->Options);
-	  CurrentIdlePage = QrCodePage;
-	  ConfigureIdleUserInterfaceButtons();
+	  if(CurrentIdlePage != QrCodePage)
+	  {
+		  // Setup every thing.
+		  IdlePageQrCodeInit(QrCodePage);
+                  CurrentIdlePage = QrCodePage;
+		  ConfigureIdleUserInterfaceButtons();
+	  }
 
+	  IdlePageQrCodeButtonHandler(pMsg->Options);
 	  // And this should be moved too
 	  /* display entire buffer */
 	  PrepareMyBufferForLcd(STARTING_ROW,NUM_LCD_ROWS);
@@ -464,7 +470,7 @@ void StopAllDisplayTimers(void)
   StopOneSecondTimer(IdleModeTimerId);
   StopOneSecondTimer(ApplicationModeTimerId);
   StopOneSecondTimer(NotificationModeTimerId);
-   
+
 }
 
 /*! Draw the Idle screen and cause the remainder of the display to be updated
@@ -514,10 +520,10 @@ static void IdleUpdateHandler(void)
      * set it whenever watch uses whole screen
      */
     tHostMsg* pOutgoingMsg;
-    BPL_AllocMessageBuffer(&pOutgoingMsg);
-    pOutgoingMsg->Type = UpdateDisplay;
-    pOutgoingMsg->Options = IDLE_MODE | DONT_ACTIVATE_DRAW_BUFFER;
-    RouteMsg(&pOutgoingMsg);
+       BPL_AllocMessageBuffer(&pOutgoingMsg);
+       pOutgoingMsg->Type = UpdateDisplay;
+       pOutgoingMsg->Options = IDLE_MODE | DONT_ACTIVATE_DRAW_BUFFER;
+       RouteMsg(&pOutgoingMsg);
    
     CurrentIdlePage = NormalPage;
     ConfigureIdleUserInterfaceButtons();
@@ -1109,7 +1115,7 @@ static void InitMyBuffer(void)
 }
 
 
-static void FillMyBuffer(unsigned char StartingRow,
+void FillMyBuffer(unsigned char StartingRow,
                          unsigned char NumberOfRows,
                          unsigned char FillValue)
 {
@@ -1176,7 +1182,7 @@ void CopyRowsIntoMyBuffer(unsigned char const* pImage,
 
 }
 
-static void CopyColumnsIntoMyBuffer(unsigned char const* pImage,
+void CopyColumnsIntoMyBuffer(unsigned char const* pImage,
                                     unsigned char StartingRow,
                                     unsigned char NumberOfRows,
                                     unsigned char StartingColumn,
@@ -1587,23 +1593,7 @@ static void MenuModeHandler(unsigned char MsgOptions)
  */
 
 
-unsigned char const * SecondsIcon(void)
-{
-	if ( nvDisplaySeconds )
-	{
-	    return pSecondsOnMenuIcon;
-	}
-	return  pSecondsOffMenuIcon;
 
-}
-unsigned char const * TimeFormatIcon(void)
-{
-	if(GetTimeFormat() == TWELVE_HOUR)
-	{
-		return hour24;
-	}
-	return hour12;
-}
 
 unsigned char const *RstPinIcon(void)
 {
@@ -2722,6 +2712,11 @@ static void InitializeDisplaySeconds(void)
   OsalNvItemInit(NVID_DISPLAY_SECONDS,
                  sizeof(nvDisplaySeconds),
                  &nvDisplaySeconds);
+}
+
+int GetDisplaySeconds()
+{
+	return nvDisplaySeconds;
 }
 
 void ToggleSecondsHandler(void)

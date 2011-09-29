@@ -1,7 +1,7 @@
 #ifndef METAWATCH_IDLEPAGE_QR_CODE
 #define METAWATCH_IDLEPAGE_QR_CODE
 
-
+int IdlePageQrCodeInit();
 int IdlePageQrCodeButtonHandler(unsigned char MsgOptions);
 void IdlePageQrCodeConfigButtons(void);
 
