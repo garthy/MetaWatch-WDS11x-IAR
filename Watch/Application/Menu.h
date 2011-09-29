@@ -60,12 +60,14 @@ struct menu_item {
 #define MENU_ITEMS 4
 
 struct menu{
-  const struct menu_item  items[4];
+	const struct menu *next;
+	const struct menu_item  items[4];
 };
 
 #define MENU_DEF(name) extern const struct menu name;
 
-#define MENU_START(name) const struct menu name = {	.items = {
+#define MENU_START(name) const struct menu name = {	.next = NULL, .items = {
+#define MENU_START_WITH_NEXT(name, nextmenu) const struct menu name = {	.next = &nextmenu, .items = {
 
 #define MENU_DYNAMIC_ICON_ACTION(iconfunc, actionfunc, menuflags) \
     { .type = menu_icon_action,\
@@ -91,7 +93,7 @@ struct menu{
 	.u.imsg.pIcon =  picon,\
     },
 
-#define MENU_MENU_NEXT(menu, picon, menuflags) \
+#define MENU_SUB(menu, picon, menuflags) \
     { .type = menu_menu,\
 	.ButtonPressType = BUTTON_STATE_IMMEDIATE, \
     .flags = menuflags, \

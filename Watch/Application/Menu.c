@@ -12,7 +12,7 @@
 #include "Display.h"
 #include "Icons.h"
 #include "Menu.h"
-#include "Menus.h"
+//#include "Menus.h"
 
 #include "hal_board_type.h"
 //#include "hal_rtc.h"
@@ -36,7 +36,12 @@
 #define MENU_MAX_DEPTH 5
 
 struct menu const *menustack[MENU_MAX_DEPTH] = {0};
-unsigned char pos = 0;
+signed char pos = -1;
+
+int istop()
+{
+	return (pos == 0);
+}
 
 void menu_pop()
 {
@@ -52,6 +57,11 @@ void menu_push(struct menu const *m)
 	{
 		menustack[++pos] = m;
 	}
+}
+
+void menu_next(struct menu const *m)
+{
+   menustack[pos] = m;
 }
 
 struct menu const *  menu_current(void)
@@ -70,7 +80,7 @@ unsigned char const * menu_get_icon(struct menu_item const * item)
   } else if(item->type ==  menu_action)
   {
 	  return item->u.iaction.pIcon;
-  } else if(item->type ==  	  menu_icon_action)
+  } else if(item->type == menu_icon_action)
   {
 	  return item->u.iiconaction.geticon();
   }
@@ -89,7 +99,6 @@ int menu_button_handler(unsigned char MsgOptions)
 			// Nothing this should be handled by the framework
 			break;
 		case menu_menu:
-			menu_pop();
 			menu_push(i->u.imenu.menuptr);
 			break;
 		case menu_action:
@@ -110,43 +119,41 @@ int menu_button_handler(unsigned char MsgOptions)
 	}
 	else if(MsgOptions == MENU_BUTTON_NEXT)
 	{
-		// pop current menu and push next one.
-		// This is a temporary hack till we sort out menu progression
 		struct menu const *m = menu_current();
-		if(m == &menu1)
+		if(m->next)
 		{
-			menu_pop();
-			menu_push(&menu2);
-		} else if(m == &menu2)
-		{
-			menu_pop();
-			menu_push(&menu3);
-		} else if(m == &menu3)
-		{
-			menu_pop();
-			menu_push(&menu1);
-			refresh = 1;
+			menu_next(m->next);
+            refresh = 1;
 		}
 	} else if(MsgOptions == MENU_BUTTON_EXIT)
 	{
-	    tHostMsg* pOutgoingMsg;
-	    /* Only save stuff if it's been changed */
-	    /* save all of the non-volatile items */
-	    BPL_AllocMessageBuffer(&pOutgoingMsg);
-	    pOutgoingMsg->Type = PariringControlMsg;
-	    pOutgoingMsg->Options = PAIRING_CONTROL_OPTION_SAVE_SPP;
-	    RouteMsg(&pOutgoingMsg);
+		if(istop())
+		{
+			tHostMsg* pOutgoingMsg;
+			/* Only save stuff if it's been changed */
+			/* save all of the non-volatile items */
+			// FIXME SAVE STUFF!!
 
-	    //SaveLinkAlarmEnable();
-	    //SaveRstNmiConfiguration();
-	    //SaveIdleBufferInvert();
-	    //SaveDisplaySeconds();
-	    //SaveTimeFormat();
+			//BPL_AllocMessageBuffer(&pOutgoingMsg);
+			//pOutgoingMsg->Type = PariringControlMsg;
+			//pOutgoingMsg->Options = PAIRING_CONTROL_OPTION_SAVE_SPP;
+			//RouteMsg(&pOutgoingMsg);
+			//SaveLinkAlarmEnable();
+			//SaveRstNmiConfiguration();
+			//SaveIdleBufferInvert();
+			//SaveDisplaySeconds();
+			//SaveTimeFormat();
 
-	    /* go back to the normal idle screen */
-	    BPL_AllocMessageBuffer(&pOutgoingMsg);
-	    pOutgoingMsg->Type = IdleUpdate;
-	    RouteMsg(&pOutgoingMsg);
+			/* go back to the normal idle screen */
+			BPL_AllocMessageBuffer(&pOutgoingMsg);
+			pOutgoingMsg->Type = IdleUpdate;
+			RouteMsg(&pOutgoingMsg);
+		}
+		else
+		{
+			menu_pop();
+			refresh = 1;
+		}
 	}
 	if((i->flags & MENU_FLAG_UPDATE) == MENU_FLAG_UPDATE)
 	{
