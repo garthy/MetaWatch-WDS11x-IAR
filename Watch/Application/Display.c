@@ -202,13 +202,13 @@ unsigned char GetDateFormat(void)
 
 void ToggleDateFormat(void)
 {
-  if ( nvDateFormat == 1 )
+  if ( nvDateFormat == DAY_FIRST )
   {
-	  nvDateFormat = 0;
+	  nvDateFormat = MONTH_FIRST;
   }
   else
   {
-	  nvDateFormat = 1;
+	  nvDateFormat = DAY_FIRST;
   }
 }
 
