@@ -56,6 +56,7 @@
 #include "Menu.h"
 #include "Menus.h"
 #include "IdlePageQrCode.h"
+#include "IdlePageWatchStatus.h"
 
 
 #define DISPLAY_TASK_QUEUE_LENGTH 8
@@ -80,7 +81,6 @@ static tTimerId NotificationModeTimerId;
 static void IdleUpdateHandler(void);
 static void ChangeModeHandler(tHostMsg* pMsg);
 static void ModeTimeoutHandler(tHostMsg* pMsg);
-static void WatchStatusScreenHandler(void);
 static void ListPairedDevicesHandler(void);
 static void ConfigureIdleBuferSizeHandler(tHostMsg* pMsg);
 static void ModifyTimeHandler(tHostMsg* pMsg);
@@ -115,31 +115,15 @@ static void PrepareMyBufferForLcd(unsigned char StartingRow,
                                   unsigned char NumberOfRows);
 
 
-
-static void AddDecimalPoint8w10h(unsigned char RowOffset,
-                                 unsigned char ColumnOffset);
-
 static unsigned char const* GetSpritePointerForChar(unsigned char CharIn);
 static unsigned char const* GetSpritePointerForDigit(unsigned char Digit);
 static unsigned char const* GetPointerForTimeDigit(unsigned char Digit,
                                                    unsigned char Offset);
 
-unsigned char WriteString(unsigned char* pString,
-                          unsigned char RowOffset,
-                          unsigned char ColumnOffset,
-                          unsigned char AddSpace);
 
-#define ADD_SPACE_AT_END      ( 1 )
-#define DONT_ADD_SPACE_AT_END ( 0 )
 
-static void WriteSpriteChar(unsigned char Char,
-                            unsigned char RowOffset,
-                            unsigned char ColumnOffset);
 
-static void WriteSpriteDigit(unsigned char Digit,
-                             unsigned char RowOffset,
-                             unsigned char ColumnOffset,
-                             signed char ShiftAmount);
+
 
 
 static void WriteTimeDigit(unsigned char Digit,
@@ -367,7 +351,11 @@ static void DisplayQueueMessageHandler(tHostMsg* pMsg)
     break;
 
   case WatchStatusMsg:
-    WatchStatusScreenHandler();
+    IdlePageWatchStatusHandler(IdleModeTimerId);
+    PrepareMyBufferForLcd(STARTING_ROW,NUM_LCD_ROWS);
+    SendMyBufferToLcd(NUM_LCD_ROWS);
+	CurrentIdlePage = WatchStatusPage;
+	ConfigureIdleUserInterfaceButtons();
     break;
  
   case BarCode:
@@ -606,7 +594,11 @@ static void ConnectionStateChangeHandler(void)
       break;
     
     case WatchStatusPage:
-      WatchStatusScreenHandler();
+      IdlePageWatchStatusHandler(IdleModeTimerId);
+      PrepareMyBufferForLcd(STARTING_ROW,NUM_LCD_ROWS);
+      SendMyBufferToLcd(NUM_LCD_ROWS);
+	  CurrentIdlePage = WatchStatusPage;
+	  ConfigureIdleUserInterfaceButtons();
       break;
     
     case QrCodePage:
@@ -747,149 +739,6 @@ static void ModeTimeoutHandler(tHostMsg* pMsg)
 }
   
 
-static void WatchStatusScreenHandler(void)
-{
-  StopAllDisplayTimers();
-  
-  FillMyBuffer(STARTING_ROW,NUM_LCD_ROWS,0x00);
-    
-  /*
-   * Add Status Icons
-   */
-  unsigned char const * pIcon;
-  
-  if ( QueryBluetoothOn() )
-  {
-    pIcon = pBluetoothOnStatusScreenIcon;
-  }
-  else
-  {
-    pIcon = pBluetoothOffStatusScreenIcon;  
-  }
-  
-  CopyColumnsIntoMyBuffer(pIcon,
-                         0,
-                         STATUS_ICON_SIZE_IN_ROWS,
-                         LEFT_STATUS_ICON_COLUMN,
-                         STATUS_ICON_SIZE_IN_COLUMNS);  
-    
-  
-  if ( QueryPhoneConnected() )
-  {
-    pIcon = pPhoneConnectedStatusScreenIcon;
-  }
-  else
-  {
-    pIcon = pPhoneDisconnectedStatusScreenIcon;  
-  }
-  
-  CopyColumnsIntoMyBuffer(pIcon,
-                         0,
-                         STATUS_ICON_SIZE_IN_ROWS,
-                         CENTER_STATUS_ICON_COLUMN,
-                         STATUS_ICON_SIZE_IN_COLUMNS);  
-  
-  unsigned int bV = ReadBatterySenseAverage();
-  
-  if ( QueryBatteryCharging() )
-  {
-    pIcon = pBatteryChargingStatusScreenIcon;
-  }
-  else
-  {
-    if ( bV > 4000 )
-    {
-      pIcon = pBatteryFullStatusScreenIcon;
-    }
-    else if ( bV < 3500 )
-    {
-      pIcon = pBatteryLowStatusScreenIcon;  
-    }
-    else
-    {
-      pIcon = pBatteryMediumStatusScreenIcon;  
-    }
-  }
-  
-  
-  CopyColumnsIntoMyBuffer(pIcon,
-                         0,
-                         STATUS_ICON_SIZE_IN_ROWS,
-                         RIGHT_STATUS_ICON_COLUMN,
-                         STATUS_ICON_SIZE_IN_COLUMNS);  
-      
-  unsigned char row = 27;
-  unsigned char col = 8;
-  unsigned char msd = 0;
-
-  msd = bV / 1000;
-  bV = bV % 1000;
-  WriteSpriteDigit(msd,row,col++,0);
-  
-  msd = bV / 100;
-  bV = bV % 100;
-  WriteSpriteDigit(msd,row,col++,0);
-  AddDecimalPoint8w10h(row,col-2);
-  
-  msd = bV / 10;
-  bV = bV % 10;
-  WriteSpriteDigit(msd,row,col++,0); 
-  
-  WriteSpriteDigit(bV,row,col++,0);
-   
-  /*
-   * Add Wavy line
-   */
-  row += 12;
-  CopyRowsIntoMyBuffer(pWavyLine,row,NUMBER_OF_ROWS_IN_WAVY_LINE);
-  
-  
-  /*
-   * Add details
-   */
-
-  /* add MAC address */
-  row += NUMBER_OF_ROWS_IN_WAVY_LINE+2;
-  col = 0;
-  WriteString(GetLocalBluetoothAddressString(),row,col,DONT_ADD_SPACE_AT_END);
-
-  /* add the firmware version */
-  row += 12;
-  col = 0;
-  col = WriteString("App",row,col,ADD_SPACE_AT_END);
-  col = WriteString(VERSION_STRING,row,col,ADD_SPACE_AT_END);
-
-  /* stack version */
-  row += 12;
-  col = 0;
-  col = WriteString("Stack",row,col,ADD_SPACE_AT_END);
-  col = WriteString(GetStackVersion(),row,col,ADD_SPACE_AT_END);
-
-  /* add msp430 revision */
-  row +=12;
-  col = 0;
-  col = WriteString("MSP430 Rev",row,col,DONT_ADD_SPACE_AT_END);
-  WriteSpriteChar(GetHardwareRevision(),row,col++);
- 
-  /* display entire buffer */
-  PrepareMyBufferForLcd(STARTING_ROW,NUM_LCD_ROWS);
-  SendMyBufferToLcd(NUM_LCD_ROWS);
-
-  CurrentIdlePage = WatchStatusPage;
-  ConfigureIdleUserInterfaceButtons();
-  
-  /* refresh the status page once a minute */  
-  SetupOneSecondTimer(IdleModeTimerId,
-                      ONE_SECOND*60,
-                      NO_REPEAT,
-                      WatchStatusMsg,
-                      NO_MSG_OPTIONS);
-  
-  StartOneSecondTimer(IdleModeTimerId);
-  
-  
-  
-}
 
 
 
@@ -1216,7 +1065,7 @@ void CopyColumnsIntoMyBuffer(unsigned char const* pImage,
 
 
 /* sprites are in the form row,row,row */
-static void WriteSpriteChar(unsigned char Char,
+void WriteSpriteChar(unsigned char Char,
                             unsigned char RowOffset,
                             unsigned char ColumnOffset)
 {
@@ -1238,7 +1087,7 @@ static void WriteSpriteChar(unsigned char Char,
 /* shift only works for blank pixels 
  * a real shift will require an OR operation
  */
-static void WriteSpriteDigit(unsigned char Digit,
+void WriteSpriteDigit(unsigned char Digit,
                              unsigned char RowOffset,
                              unsigned char ColumnOffset,
                              signed char ShiftAmount)
@@ -1810,7 +1659,7 @@ static void MenuButtonHandler(unsigned char MsgOptions)
 
 
 
-static void AddDecimalPoint8w10h(unsigned char RowOffset,
+void AddDecimalPoint8w10h(unsigned char RowOffset,
                                  unsigned char ColumnOffset)
 {
   /* right most pixel is most significant bit */
@@ -2570,39 +2419,9 @@ static void ConfigureIdleUserInterfaceButtons(void)
       break;
 
     case WatchStatusPage:
-      
-      /* map this mode's entry button to go back to the idle mode */
-      EnableButtonAction(IDLE_MODE,
-                         SW_F_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         IdleUpdate,
-                         RESET_DISPLAY_TIMER);
-    
-      EnableButtonAction(IDLE_MODE,
-                         SW_E_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         ListPairedDevicesMsg,
-                         NO_MSG_OPTIONS);
-       
-      /* led is already assigned */
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_C_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuModeMsg,
-                         MENU_MODE_OPTION_PAGE1);
-      
-      DisableButtonAction(IDLE_MODE,
-                          SW_B_INDEX,
-                          BUTTON_STATE_IMMEDIATE);
-                          
-      EnableButtonAction(IDLE_MODE,
-                         SW_A_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         BarCode,
-                         RESET_DISPLAY_TIMER);
-      break;
-  
+    	 IdlePageWatchStatusConfigButtons();
+    break;
+
     case QrCodePage:
     	IdlePageQrCodeConfigButtons();
       break;

@@ -1,6 +1,8 @@
 #ifndef METWATCH_BLUETOOTH_WRAPPERS_H
 #define METWATCH_BLUETOOTH_WRAPPERS_H
 
+#include "SerialProfile.h"
+
 void bluetooth_toggle_bluetooth(void);
 unsigned char const * bluetooth_get_status_icon();
 void bluetooth_toggle_discoverability(void);

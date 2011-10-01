@@ -75,6 +75,27 @@ unsigned char QueryIdlePageNormal(void);
 #define WATCH_DRAWN_IDLE_BUFFER_ROWS  ( 30 )
 #define PHONE_IDLE_BUFFER_ROWS        ( 66 )
 
+
+unsigned char WriteString(unsigned char* pString,
+                          unsigned char RowOffset,
+                          unsigned char ColumnOffset,
+                          unsigned char AddSpace);
+
+#define ADD_SPACE_AT_END      ( 1 )
+#define DONT_ADD_SPACE_AT_END ( 0 )
+
+void AddDecimalPoint8w10h(unsigned char RowOffset,
+                                 unsigned char ColumnOffset);
+
+void WriteSpriteDigit(unsigned char Digit,
+                      unsigned char RowOffset,
+                      unsigned char ColumnOffset,
+                      signed char ShiftAmount);
+
+void WriteSpriteChar(unsigned char Char,
+					 unsigned char RowOffset,
+                     unsigned char ColumnOffset);
+
 // Called before anyupdates to the screen
 void StopAllDisplayTimers(void);
 
