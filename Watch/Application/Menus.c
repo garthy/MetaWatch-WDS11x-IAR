@@ -250,6 +250,7 @@ MENU_DYNAMIC_ICON_ACTION(bluetooth_get_discoverability_icon, bluetooth_toggle_di
 MENU_DYNAMIC_ICON_ACTION(bluetooth_get_secure_smiple_pairing_icon, bluetooth_toggle_secure_smiple_pairing, MENU_FLAG_UPDATE)
 MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
 MENU_DYNAMIC_ICON_ACTION(bluetooth_get_status_icon, bluetooth_toggle_bluetooth, 0) // no update as the spp callback does the refresh
+MENU_MSG_BUTTON(ListPairedDevicesMsg, NO_MSG_OPTIONS, pResetButtonIcon, BUTTON_STATE_PRESSED, MENU_FLAG_UPDATE)
 MENU_END
 
 MENU_START(clock)
@@ -257,24 +258,25 @@ MENU_DYNAMIC_ICON_ACTION(SecondsIcon, ToggleSecondsHandler, MENU_FLAG_UPDATE)
 MENU_DYNAMIC_ICON_ACTION(DateFormatIcon, ToggleDateFormat, MENU_FLAG_UPDATE)
 MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
 MENU_DYNAMIC_ICON_ACTION(TimeFormatIcon, ToggleTimeFormat, MENU_FLAG_UPDATE)
+MENU_BLANK()
 MENU_END
 
 MENU_DEF(dev2)
 
-MENU_START_WITH_NEXT(dev, dev2)
+MENU_START(dev)
 MENU_STATIC_ICON_ACTION(pNormalDisplayMenuIcon,ToggleIdleBufferInvert, MENU_FLAG_UPDATE)
 MENU_MSG_BUTTON(SoftwareResetMsg, NO_MSG_OPTIONS, pResetButtonIcon, BUTTON_STATE_PRESSED, MENU_FLAG_UPDATE)
 MENU_DYNAMIC_ICON_ACTION(LinkAlarmIcon, ToggleLinkAlarmEnable, MENU_FLAG_UPDATE)
 MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
-//MENU_STATIC_ICON_ACTION(pRstPinIcon, ToggleRstPin, MENU_FLAG_UPDATE)
+MENU_NEXT(dev2, MENU_FLAG_UPDATE)
 MENU_END
 
-MENU_START_WITH_NEXT(dev2, dev)
+MENU_START(dev2)
 MENU_STATIC_ICON_ACTION(pNormalDisplayMenuIcon,ToggleIdleBufferInvert, MENU_FLAG_UPDATE)
-//MENU_MSG_BUTTON(SoftwareResetMsg, NO_MSG_OPTIONS, pResetButtonIcon, BUTTON_STATE_PRESSED, MENU_FLAG_UPDATE)
 MENU_DYNAMIC_ICON_ACTION(LinkAlarmIcon, ToggleLinkAlarmEnable, MENU_FLAG_UPDATE)
 MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
 MENU_STATIC_ICON_ACTION(pRstPinIcon, ToggleRstPin, MENU_FLAG_UPDATE)
+MENU_NEXT(dev, MENU_FLAG_UPDATE)
 MENU_END
 
 
@@ -283,11 +285,13 @@ MENU_SUB(bluetooth, pBluetooth, MENU_FLAG_UPDATE)
 MENU_SUB(clock, pClockSettings, MENU_FLAG_UPDATE)
 MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
 MENU_SUB(dev, pDevSettings, MENU_FLAG_UPDATE)
+MENU_BLANK()
 MENU_END
 
 
 void menu_init(void)
 {
 	menu_push(&TopLevel);
+        printf("Testing output\n");
 }
 

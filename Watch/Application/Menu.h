@@ -5,10 +5,6 @@
 
 #include "Messages.h"
 
-
-
-#define MENU_COUNT 4
-
 struct menu;
 
 struct menu_item_msg
@@ -20,7 +16,6 @@ struct menu_item_msg
 
 struct menu_item_menu
 {
-	/* Maybe pop or replace flag? */
     struct menu const * const menuptr;
     unsigned char const * const pIcon;
 };
@@ -41,9 +36,11 @@ struct menu_item_geticon_action
 	const menu_action_func action;
 };
 
-typedef enum {menu_msg, menu_menu, menu_action, menu_icon_action} menu_enum;
+typedef enum {menu_null, menu_msg, menu_menu, menu_action, menu_icon_action} menu_enum;
 
 #define MENU_FLAG_UPDATE 0x1
+#define MENU_ITEM_MENU_PUSH 0x2
+#define MENU_ITEM_MENU_NEXT 0x4
 
 struct menu_item {
 	menu_enum type;
@@ -57,20 +54,22 @@ struct menu_item {
 	}u;
 };
 
-#define MENU_ITEMS 4
+#define MENU_ITEMS 5
 
 struct menu{
-	const struct menu *next;
-	const struct menu_item  items[4];
+	/*const struct menu *next;*/
+	const struct menu_item items[MENU_ITEMS];
 };
 
 #define MENU_DEF(name) extern const struct menu name;
 
-#define MENU_START(name) const struct menu name = {	.next = NULL, .items = {
-#define MENU_START_WITH_NEXT(name, nextmenu) const struct menu name = {	.next = &nextmenu, .items = {
+#define MENU_BLANK() { .type = menu_null },
+
+#define MENU_START(name) const struct menu name = {	.items = {
+/*#define MENU_START_WITH_NEXT(name, nextmenu) const struct menu name = {	.next = &nextmenu, .items = {*/
 
 #define MENU_DYNAMIC_ICON_ACTION(iconfunc, actionfunc, menuflags) \
-    { .type = menu_icon_action,\
+	{ .type = menu_icon_action,\
     .ButtonPressType = BUTTON_STATE_IMMEDIATE, \
     .flags = menuflags, \
 	.u.iiconaction.geticon = iconfunc,\
@@ -96,9 +95,17 @@ struct menu{
 #define MENU_SUB(menu, picon, menuflags) \
     { .type = menu_menu,\
 	.ButtonPressType = BUTTON_STATE_IMMEDIATE, \
-    .flags = menuflags, \
+    .flags = menuflags | MENU_ITEM_MENU_PUSH, \
 	.u.imenu.menuptr = &menu,\
 	.u.imenu.pIcon = picon,\
+    },
+
+#define MENU_NEXT(menu, menuflags) \
+    { .type = menu_menu,\
+	.ButtonPressType = BUTTON_STATE_IMMEDIATE, \
+    .flags = menuflags | MENU_ITEM_MENU_NEXT, \
+	.u.imenu.menuptr = &menu,\
+	.u.imenu.pIcon = pNextIcon,\
     },
 
 

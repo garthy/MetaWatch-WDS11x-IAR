@@ -87,45 +87,53 @@ unsigned char const * menu_get_icon(struct menu_item const * item)
   return 0;
 }
 
+int menu_handle_button(const struct menu_item *i)
+{
+  	switch(i->type)
+	{
+	case menu_msg:
+		// Nothing this should be handled by the framework
+                // In fact we should never get here!
+		break;
+	case menu_menu:
+		if((i->flags & MENU_ITEM_MENU_PUSH) == MENU_ITEM_MENU_PUSH)
+		{
+			menu_push(i->u.imenu.menuptr);
+		} else if((i->flags & MENU_ITEM_MENU_NEXT) == MENU_ITEM_MENU_NEXT)
+		{
+			menu_next(i->u.imenu.menuptr);
+		}
+		break;
+	case menu_action:
+		if(i->u.iaction.action)
+		{
+			i->u.iaction.action();
+		}
+		break;
+	case menu_icon_action:
+		if(i->u.iiconaction.action)
+		{
+			i->u.iiconaction.action();
+		}
+		break;
+	default:
+		break;
+	}
+        if((i->flags & MENU_FLAG_UPDATE) == MENU_FLAG_UPDATE)
+	{
+		return 1;
+	}
+        return 0;
+}
+
 int menu_button_handler(unsigned char MsgOptions)
 {
 	char refresh = 0;
-	const struct menu_item *i = &(menu_current()->items[MsgOptions]);
-	if(MsgOptions < 4)
+	if(MsgOptions < MENU_ITEMS)
 	{
-		switch(i->type)
-		{
-		case menu_msg:
-			// Nothing this should be handled by the framework
-			break;
-		case menu_menu:
-			menu_push(i->u.imenu.menuptr);
-			break;
-		case menu_action:
-			if(i->u.iaction.action)
-			{
-				i->u.iaction.action();
-			}
-			break;
-		case menu_icon_action:
-			if(i->u.iiconaction.action)
-			{
-				i->u.iiconaction.action();
-			}
-			break;
-		default:
-			break;
-		}
+            refresh = menu_handle_button(&(menu_current()->items[MsgOptions]));
 	}
-	else if(MsgOptions == MENU_BUTTON_NEXT)
-	{
-		struct menu const *m = menu_current();
-		if(m->next)
-		{
-			menu_next(m->next);
-            refresh = 1;
-		}
-	} else if(MsgOptions == MENU_BUTTON_EXIT)
+	else if(MsgOptions == MENU_BUTTON_EXIT)
 	{
 		if(istop())
 		{
@@ -155,21 +163,17 @@ int menu_button_handler(unsigned char MsgOptions)
 			refresh = 1;
 		}
 	}
-	if((i->flags & MENU_FLAG_UPDATE) == MENU_FLAG_UPDATE)
-	{
-		refresh = 1;
-	}
 	return refresh;
 }
 
-unsigned char index2buttonindex[MENU_COUNT] = {SW_F_INDEX, SW_E_INDEX, SW_D_INDEX, SW_A_INDEX};
-unsigned char index2buttonmsgoption[MENU_COUNT] = {MENU_BUTTON_F, MENU_BUTTON_E, MENU_BUTTON_D, MENU_BUTTON_A };
+unsigned char index2buttonindex[MENU_ITEMS] = {SW_F_INDEX, SW_E_INDEX, SW_D_INDEX, SW_A_INDEX, SW_B_INDEX};
+unsigned char index2buttonmsgoption[MENU_ITEMS] = {MENU_BUTTON_F, MENU_BUTTON_E, MENU_BUTTON_D, MENU_BUTTON_A, MENU_BUTTON_B };
 
 void menu_config_buttons(void)
 {
 	struct menu const *m = menu_current();
 	int i;
-	for(i = 0; i < MENU_COUNT; ++i)
+	for(i = 0; i < MENU_ITEMS; ++i)
 	{
 		 EnableButtonAction(IDLE_MODE,
 				 index2buttonindex[i],
@@ -182,10 +186,4 @@ void menu_config_buttons(void)
                        BUTTON_STATE_IMMEDIATE,
                        MenuButtonMsg,
                        MENU_BUTTON_EXIT);
-
-    EnableButtonAction(IDLE_MODE,
-                       SW_B_INDEX,
-                       BUTTON_STATE_IMMEDIATE,
-                       MenuButtonMsg,
-                       MENU_BUTTON_NEXT);
 }

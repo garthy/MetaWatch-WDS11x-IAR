@@ -121,11 +121,6 @@ static unsigned char const* GetPointerForTimeDigit(unsigned char Digit,
                                                    unsigned char Offset);
 
 
-
-
-
-
-
 static void WriteTimeDigit(unsigned char Digit,
                            unsigned char RowOffset,
                            unsigned char ColumnOffset,
@@ -1042,6 +1037,8 @@ void CopyColumnsIntoMyBuffer(unsigned char const* pImage,
   unsigned char DestColumn = StartingColumn;
   unsigned char ColumnCounter = 0;
   unsigned int SourceIndex = 0;
+  if(pImage == NULL) return; // HMMMM?
+
   
   /* copy rows into display buffer */
   while ( DestRow < NUM_LCD_ROWS && RowCounter < NumberOfRows )
@@ -1455,12 +1452,19 @@ unsigned char const *RstPinIcon(void)
 #ifdef NEWMENU
 void DrawMenu(const struct menu * const menu)
 {
-
   CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[0])),
                           BUTTON_ICON_A_F_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);
+
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[1])),
+                            BUTTON_ICON_B_E_ROW,
+                            BUTTON_ICON_SIZE_IN_ROWS,
+                            LEFT_BUTTON_COLUMN,
+                            BUTTON_ICON_SIZE_IN_COLUMNS);
+
+  /* LED */
 
   CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[3])),
                           BUTTON_ICON_A_F_ROW,
@@ -1468,12 +1472,17 @@ void DrawMenu(const struct menu * const menu)
                           RIGHT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);
 
-  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[1])),
+
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[4])),
                           BUTTON_ICON_B_E_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
-                          LEFT_BUTTON_COLUMN,
+                          RIGHT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);
+
+  /* EXIT */
 }
+
+
 #else
 static void DrawMenu1(void)
 {
@@ -1556,11 +1565,13 @@ static void DrawMenu3(void)
 
 static void DrawCommonMenuIcons(void)
 {
+	/*
   CopyColumnsIntoMyBuffer(pNextIcon,
                           BUTTON_ICON_B_E_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           RIGHT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);
+                          */
          
   CopyColumnsIntoMyBuffer(pLedIcon,
                           BUTTON_ICON_C_D_ROW,
