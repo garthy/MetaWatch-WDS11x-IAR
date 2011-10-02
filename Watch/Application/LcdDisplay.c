@@ -2222,7 +2222,7 @@ static void ConfigureIdleUserInterfaceButtons(void)
                          ListPairedDevicesMsg,
                          NO_MSG_OPTIONS);
        
-      /* led is already assigned */
+      DontChangeButtonConfiguration();
       
       EnableButtonAction(IDLE_MODE,
                          SW_C_INDEX,
@@ -2259,7 +2259,7 @@ static void ConfigureIdleUserInterfaceButtons(void)
                          ListPairedDevicesMsg,
                          NO_MSG_OPTIONS);
       
-      /* led is already assigned */
+      DontChangeButtonConfiguration();
       
       EnableButtonAction(IDLE_MODE,
                          SW_C_INDEX,
@@ -2421,7 +2421,7 @@ static void ConfigureIdleUserInterfaceButtons(void)
                          IdleUpdate,
                          NO_MSG_OPTIONS);
        
-      /* led is already assigned */
+      DontChangeButtonConfiguration();
       
       EnableButtonAction(IDLE_MODE,
                          SW_C_INDEX,
