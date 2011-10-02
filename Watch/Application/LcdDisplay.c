@@ -57,6 +57,7 @@
 #include "Menus.h"
 #include "IdlePageQrCode.h"
 #include "IdlePageWatchStatus.h"
+#include "IdlePageGameOfLife.h"
 
 
 #define DISPLAY_TASK_QUEUE_LENGTH 8
@@ -354,15 +355,26 @@ static void DisplayQueueMessageHandler(tHostMsg* pMsg)
     break;
  
   case BarCode:
+
+#ifdef SPACEINV
+
 	  if(CurrentIdlePage != QrCodePage)
 	  {
 		  // Setup every thing.
 		  IdlePageQrCodeInit(QrCodePage);
-                  CurrentIdlePage = QrCodePage;
+		  CurrentIdlePage = QrCodePage;
 		  ConfigureIdleUserInterfaceButtons();
 	  }
 
 	  IdlePageQrCodeButtonHandler(pMsg->Options);
+#else
+          if(CurrentIdlePage != QrCodePage)
+	  {
+              //copy(lowerhalf to pMyBuffer)
+          }
+	  CurrentIdlePage = QrCodePage;
+	  IdlePageGameOfLifeHandler(IdleModeTimerId, pMyBuffer);
+#endif
 	  // And this should be moved too
 	  /* display entire buffer */
 	  PrepareMyBufferForLcd(STARTING_ROW,NUM_LCD_ROWS);
@@ -2434,7 +2446,11 @@ static void ConfigureIdleUserInterfaceButtons(void)
     break;
 
     case QrCodePage:
+#ifdef SPACEINV
     	IdlePageQrCodeConfigButtons();
+#else
+    	IdlePageGameOfLifeConfigButtons();
+#endif
       break;
       
       
