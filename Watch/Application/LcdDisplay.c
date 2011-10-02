@@ -100,15 +100,8 @@ static void DisplayStartupScreen(void);
 static void SetupSplashScreenTimeout(void);
 static void AllocateDisplayTimers(void);
 static void DetermineIdlePage(void);
-#ifdef NEWMENU
 void DrawMenu(const struct menu * const menu);
 static void MenuButtonHandler(unsigned char MsgOptions);
-#else
-static void DrawMenu1(void);
-static void DrawMenu2(void);
-static void DrawMenu3(void);
-
-#endif
 static void DrawCommonMenuIcons(void);
 
 
@@ -179,13 +172,7 @@ typedef enum
   RadioOnWithPairingInfoPage,
   RadioOnWithoutPairingInfoPage,
   BluetoothOffPage,
-#ifdef NEWMENU
   MenuPage,
-#else
-  Menu1Page,
-  Menu2Page,
-  Menu3Page,
-#endif
   ListPairedDevicesPage,
   WatchStatusPage,
   QrCodePage,
@@ -255,9 +242,7 @@ static void WriteFontString(unsigned char* pString);
 void InitializeDisplayTask(void)
 {
   InitMyBuffer();
-#ifdef NEWMENU
   menu_init();
-#endif
 
   QueueHandles[DISPLAY_QINDEX] = 
     xQueueCreate( DISPLAY_TASK_QUEUE_LENGTH, MESSAGE_QUEUE_ITEM_SIZE  );
@@ -586,13 +571,7 @@ static void ConnectionStateChangeHandler(void)
     case BluetoothOffPage:
       IdleUpdateHandler();
       break;
-#ifdef NEWMENU
     case MenuPage:
-#else
-    case Menu1Page:
-    case Menu2Page:
-    case Menu3Page:
-#endif
       MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
       break;
     
@@ -1381,7 +1360,7 @@ static void MenuModeHandler(unsigned char MsgOptions)
 
   switch (MsgOptions)
   {
-#ifdef NEWMENU
+
   case MENU_MODE_OPTION_PAGE1:
   case MENU_MODE_OPTION_PAGE2:
   case MENU_MODE_OPTION_PAGE3:
@@ -1389,48 +1368,10 @@ static void MenuModeHandler(unsigned char MsgOptions)
     DrawMenu(menu_current());
     ConfigureIdleUserInterfaceButtons();
     break;
-#else
-  case MENU_MODE_OPTION_PAGE1:
-    DrawMenu1();
-    CurrentIdlePage = Menu1Page;
-    ConfigureIdleUserInterfaceButtons();
-    break;
-  
-  case MENU_MODE_OPTION_PAGE2:
-    DrawMenu2();
-    CurrentIdlePage = Menu2Page;
-    ConfigureIdleUserInterfaceButtons();
-    break;
-  
-  case MENU_MODE_OPTION_PAGE3:
-    DrawMenu3();
-    CurrentIdlePage = Menu3Page;
-    ConfigureIdleUserInterfaceButtons();
-    break;
-#endif
     
   case MENU_MODE_OPTION_UPDATE_CURRENT_PAGE:
-#ifdef NEWMENU
     DrawMenu(menu_current());
-#else
-  default:
-    switch ( CurrentIdlePage )
-    {
-    case Menu1Page:
-      DrawMenu1();
-      break;
-    case Menu2Page:
-      DrawMenu2();
-      break;
-    case Menu3Page:
-      DrawMenu3();
-      break;
-    default:
-      PrintString("Menu Mode Screen Selection Error\r\n");
-      break;
-    }
-    break;
-#endif
+
   }
 
   /* these icons are common to all menus */
@@ -1461,7 +1402,6 @@ unsigned char const *RstPinIcon(void)
 	}
 	return pNmiPinIcon;
 }
-#ifdef NEWMENU
 void DrawMenu(const struct menu * const menu)
 {
   CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[0])),
@@ -1494,87 +1434,6 @@ void DrawMenu(const struct menu * const menu)
   /* EXIT */
 }
 
-
-#else
-static void DrawMenu1(void)
-{
-  CopyColumnsIntoMyBuffer(bluetooth_get_discoverability_icon(),
-                          BUTTON_ICON_A_F_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS); 
-
-  CopyColumnsIntoMyBuffer(bluetooth_get_status_icon(),
-                          BUTTON_ICON_A_F_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          RIGHT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);  
-
-  CopyColumnsIntoMyBuffer(LinkAlarmIcon(),
-                          BUTTON_ICON_B_E_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS); 
-}
-
-static void DrawMenu2(void)
-{
-  /* top button is always soft reset */
-  CopyColumnsIntoMyBuffer(pResetButtonIcon,
-                          BUTTON_ICON_A_F_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);
-  
-
-  
-  CopyColumnsIntoMyBuffer(RstPinIcon(),
-                          BUTTON_ICON_A_F_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          RIGHT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS); 
-  
-  CopyColumnsIntoMyBuffer(bluetooth_get_secure_smiple_pairing_icon(),
-                          BUTTON_ICON_B_E_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);   
-}
-
-static void DrawMenu3(void)
-{
-  CopyColumnsIntoMyBuffer(pNormalDisplayMenuIcon,
-                          BUTTON_ICON_A_F_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS); 
-  /***************************************************************************/
-  
-#if 0
-  /* shipping mode was removed for now */
-  CopyColumnsIntoMyBuffer(pShippingModeIcon,
-                          BUTTON_ICON_A_F_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          RIGHT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);  
-#endif
-  /***************************************************************************/
-  
-  CopyColumnsIntoMyBuffer(SecondsIcon(),
-                          BUTTON_ICON_B_E_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);   
-  
-
-  CopyColumnsIntoMyBuffer(TimeFormatIcon(),
-	                      BUTTON_ICON_A_F_ROW,
-	                      BUTTON_ICON_SIZE_IN_ROWS,
-	                      RIGHT_BUTTON_COLUMN,
-	                      BUTTON_ICON_SIZE_IN_COLUMNS);
-}
-#endif /* NEWMENU */
-
 static void DrawCommonMenuIcons(void)
 {
 	/*
@@ -1602,82 +1461,10 @@ static void MenuButtonHandler(unsigned char MsgOptions)
 {
   StopAllDisplayTimers();
 
-
-#ifdef NEWMENU
 	if(menu_button_handler(MsgOptions))
 	{
 		MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
 	}
-#else
-  tHostMsg* pOutgoingMsg;
-  switch (MsgOptions)
-  {
-  case MENU_BUTTON_OPTION_TOGGLE_DISCOVERABILITY:
-	/* screen will be updated with a message from spp */
-	bluetooth_toggle_discoverability();
-	break;
-
-  case MENU_BUTTON_OPTION_TOGGLE_BLUETOOTH:
-	/* screen will be updated with a message from spp */
-	bluetooth_toggle_bluetooth();
-	break;
-
-  case MENU_BUTTON_OPTION_TOGGLE_SECURE_SIMPLE_PAIRING:
-	/* screen will be updated with a message from spp */
-	  bluetooth_toggle_secure_smiple_pairing();
-    break;
-    
-  case MENU_BUTTON_OPTION_TOGGLE_LINK_ALARM:
-	ToggleLinkAlarmEnable();
-	MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
-    break;
-  
-  case MENU_BUTTON_OPTION_EXIT:          
-    
-		/* Only save stuff if it's been changed */
-	    /* save all of the non-volatile items */
-	    BPL_AllocMessageBuffer(&pOutgoingMsg);
-	    pOutgoingMsg->Type = PariringControlMsg;
-	    pOutgoingMsg->Options = PAIRING_CONTROL_OPTION_SAVE_SPP;
-	    RouteMsg(&pOutgoingMsg);
-
-	    SaveLinkAlarmEnable();
-	    SaveRstNmiConfiguration();
-	    SaveIdleBufferInvert();
-	    SaveDisplaySeconds();
-	    SaveTimeFormat();
-
-	    /* go back to the normal idle screen */
-	    BPL_AllocMessageBuffer(&pOutgoingMsg);
-	    pOutgoingMsg->Type = IdleUpdate;
-	    RouteMsg(&pOutgoingMsg);
-    
-    break;
-    
-  case MENU_BUTTON_OPTION_TOGGLE_RST_NMI_PIN:
-	  ToggleRstPin();
-    MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
-    break;
-    
-  case MENU_BUTTON_OPTION_DISPLAY_SECONDS:
-	  ToggleSecondsHandler();
-    MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
-    break;
-    
-  case MENU_BUTTON_OPTION_INVERT_DISPLAY:
-	  ToggleIdleBufferInvert();
-    MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
-    break;
-    
-  case MENU_BUTTON_OPTION_TOGGLE_HOUR_DISPLAY:
-	  ToggleTimeFormat();
-    MenuModeHandler(MENU_MODE_OPTION_UPDATE_CURRENT_PAGE);
-    break;
-
-  default:
-    break;
-  }
-#endif /* NEWMENU */
 }
 
 
@@ -2283,127 +2070,9 @@ static void ConfigureIdleUserInterfaceButtons(void)
       
       
 
-#ifdef NEWMENU
+
     case MenuPage:
     	menu_config_buttons();
-#else
-    case Menu1Page:
-        EnableButtonAction(IDLE_MODE,
-                           SW_F_INDEX,
-                           BUTTON_STATE_IMMEDIATE,
-                           MenuButtonMsg,
-                           MENU_BUTTON_OPTION_TOGGLE_DISCOVERABILITY);
-
-        EnableButtonAction(IDLE_MODE,
-                           SW_E_INDEX,
-                           BUTTON_STATE_IMMEDIATE,
-                           MenuButtonMsg,
-                           MENU_BUTTON_OPTION_TOGGLE_LINK_ALARM);
-
-        /* led is already assigned */
-
-        EnableButtonAction(IDLE_MODE,
-                           SW_C_INDEX,
-                           BUTTON_STATE_IMMEDIATE,
-                           MenuButtonMsg,
-                           MENU_BUTTON_OPTION_EXIT);
-
-        EnableButtonAction(IDLE_MODE,
-                           SW_B_INDEX,
-                           BUTTON_STATE_IMMEDIATE,
-                           MenuModeMsg,
-                           MENU_MODE_OPTION_PAGE2);
-
-        EnableButtonAction(IDLE_MODE,
-                           SW_A_INDEX,
-                           BUTTON_STATE_IMMEDIATE,
-                           MenuButtonMsg,
-                           MENU_BUTTON_OPTION_TOGGLE_BLUETOOTH);
-
-      break;
-      
-    case Menu2Page:
-      
-      /* this cannot be immediate because Master Reset is on this button also */
-      EnableButtonAction(IDLE_MODE,
-                         SW_F_INDEX,
-                         BUTTON_STATE_PRESSED,
-                         SoftwareResetMsg,
-                         NO_MSG_OPTIONS);
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_E_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_TOGGLE_SECURE_SIMPLE_PAIRING);
-      
-      /* led is already assigned */
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_C_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_EXIT);
-            
-      EnableButtonAction(IDLE_MODE,
-                         SW_B_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuModeMsg,
-                         MENU_MODE_OPTION_PAGE3);
-            
-      EnableButtonAction(IDLE_MODE,
-                         SW_A_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                        MENU_BUTTON_OPTION_TOGGLE_RST_NMI_PIN);
-      break;
-    
-      
-    case Menu3Page:
-      EnableButtonAction(IDLE_MODE,
-                         SW_F_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_INVERT_DISPLAY);
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_E_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_DISPLAY_SECONDS);
-      
-      /* led is already assigned */
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_C_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_EXIT);
-      
-      EnableButtonAction(IDLE_MODE,
-                         SW_B_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuModeMsg,
-                         MENU_MODE_OPTION_PAGE1);
-
-
-            
-#if 0
-      /* shipping mode is disabled for now */
-      EnableButtonAction(IDLE_MODE,
-                         SW_A_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         EnterShippingModeMsg,
-                         NO_MSG_OPTIONS);
-#else
-
-      EnableButtonAction(IDLE_MODE,
-                         SW_A_INDEX,
-                         BUTTON_STATE_IMMEDIATE,
-                         MenuButtonMsg,
-                         MENU_BUTTON_OPTION_TOGGLE_HOUR_DISPLAY);
-#endif
-#endif /* NEWMENU */
       break;
       
     case ListPairedDevicesPage:
