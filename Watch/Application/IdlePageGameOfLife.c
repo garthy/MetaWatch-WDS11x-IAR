@@ -1,26 +1,23 @@
 #include <string.h>
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-
-#include "Messages.h"
-#include "BufferPool.h"
-#include "Buttons.h"
-#include "hal_lpm.h"
 #include "hal_lcd.h"
-#include "MessageQueues.h"
-//#include "IdlePageQrCode.h"
 #include "Messages.h" //IDLE_MODE + msgs
 #include "Buttons.h"  // BUTTON_STATE
-//#include "hal_lpm.h"
 #include "hal_board_type.h"// SW_
 #include "LcdDisplay.h"
-#include "Icons.h"
-#include "Menu.h"
 #include "OneSecondTimers.h"
+#include "IdlePage.h"
 
 #define HEIGHT 96
 #define WIDTH 96
+
+void IdlePageGameOfLifeConfigButtons(struct IdleInfo *Info);
+int IdlePageGameOfLifeHandler(struct IdleInfo *Info);;
+const struct IdlePage IdlePageGameOfLife = {
+	.Start = NULL,
+	.Stop = NULL,
+	.Handler = IdlePageGameOfLifeHandler,
+	.ConfigButtons = IdlePageGameOfLifeConfigButtons, };
+
 
 tLcdLine tmp[96];
 
@@ -83,21 +80,21 @@ void live(tLcdLine *life)
 }
 
 
-int IdlePageGameOfLifeHandler(int IdleModeTimerId, tLcdLine *screen)
+static int IdlePageGameOfLifeHandler(struct IdleInfo *Info)
 {
   
-    StopAllDisplayTimers();
-    SetupOneSecondTimer(IdleModeTimerId,
+    StopAllDisplayTimers(); // Think we'll do this when we change pages???
+    SetupOneSecondTimer(Info->IdleModeTimerId,
 	                     ONE_SECOND,
 	                      NO_REPEAT,
 	                      BarCode,
 	                      NO_MSG_OPTIONS);
-    live(screen);
-  StartOneSecondTimer(IdleModeTimerId);
-  return 0;
+    live(Info->buffer);
+    StartOneSecondTimer(Info->IdleModeTimerId);
+    return 0;
 }
 
-void IdlePageGameOfLifeConfigButtons(void)
+static void IdlePageGameOfLifeConfigButtons(struct IdleInfo *Info)
 {
     /* map this mode's entry button to go back to the idle mode */
     EnableButtonAction(IDLE_MODE,

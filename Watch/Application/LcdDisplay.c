@@ -56,6 +56,7 @@
 #include "LinkAlarm.h"
 #include "Menu.h"
 #include "Menus.h"
+#include "IdlePage.h"
 #include "IdlePageMain.h"
 #include "IdlePageQrCode.h"
 #include "IdlePageWatchStatus.h"
@@ -303,9 +304,11 @@ static void DisplayQueueMessageHandler(tHostMsg* pMsg)
           if(CurrentIdlePage != QrCodePage)
 	  {
               //copy(lowerhalf to pMyBuffer)
+              IdlePageStart(&IdlePageGameOfLife);
           }
 	  CurrentIdlePage = QrCodePage;
-	  IdlePageGameOfLifeHandler(IdleModeTimerId, pMyBuffer);
+          IdlePageHandler(&IdlePageGameOfLife);
+	  //IdlePageGameOfLifeHandler(IdleModeTimerId, pMyBuffer);
 #endif
 	  // And this should be moved too
 	  /* display entire buffer */
@@ -1101,7 +1104,8 @@ static void ConfigureIdleUserInterfaceButtons(void)
 #ifdef SPACEINV
     	IdlePageQrCodeConfigButtons();
 #else
-    	IdlePageGameOfLifeConfigButtons();
+//    	IdlePageGameOfLifeConfigButtons();
+        IdlePageConfigButtons(&IdlePageGameOfLife);
 #endif
       break;
       
