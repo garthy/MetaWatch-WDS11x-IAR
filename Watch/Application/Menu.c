@@ -206,11 +206,11 @@ static void DrawCommonMenuIcons(void)
                           BUTTON_ICON_SIZE_IN_COLUMNS);
                           */
 
-  /*CopyColumnsIntoMyBuffer(pLedIcon,
+  CopyColumnsIntoMyBuffer(pLedIcon,
                           BUTTON_ICON_C_D_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);*/
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
 
   CopyColumnsIntoMyBuffer(pExitIcon,
                           BUTTON_ICON_C_D_ROW,
