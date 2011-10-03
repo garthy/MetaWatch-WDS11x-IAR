@@ -43,12 +43,18 @@ int istop()
 	return (pos == 0);
 }
 
+struct menu const *  menu_current(void)
+{
+	return menustack[pos];
+}
+
 void menu_pop()
 {
 	if(pos > 0)
 	{
 		--pos;
 	}
+        menu_config_buttons();
 }
 
 void menu_push(struct menu const *m)
@@ -57,16 +63,13 @@ void menu_push(struct menu const *m)
 	{
 		menustack[++pos] = m;
 	}
+        menu_config_buttons();
 }
 
 void menu_next(struct menu const *m)
 {
    menustack[pos] = m;
-}
-
-struct menu const *  menu_current(void)
-{
-	return menustack[pos];
+   menu_config_buttons();
 }
 
 unsigned char const * menu_get_icon(struct menu_item const * item)
