@@ -18,6 +18,9 @@ struct IdlePage
 	void (*ConfigButtons)(struct IdleInfo *Info);
 };
 
+void InitIdlePage(int IdleModeTimerId,
+	          tLcdLine *buffer);
+
 void IdlePageStart(struct IdlePage const * Page);
 void IdlePageStop(struct IdlePage const * Page);
 void IdlePageHandler(struct IdlePage const * Page);

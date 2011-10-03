@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include "Messages.h" //IDLE_MODE + msgs
 #include "Buttons.h"  // BUTTON_STATE
 #include "hal_board_type.h"// SW_
@@ -9,21 +10,19 @@
 #include "BlueTooth.h"
 #include "Adc.h"
 #include "hal_battery.h"
-
+#include "IdlePage.h"
 #include "IdlePageWatchStatus.h"
 
+void IdlePageWatchStatusConfigButtons(struct IdleInfo *Info);
+int IdlePageWatchStatusHandler(struct IdleInfo *Info);
 
-void IdlePageWatchStatusInit()
-{
+const struct IdlePage IdlePageWatchStatus = {
+	.Start = NULL,
+	.Stop = NULL,
+	.Handler = IdlePageWatchStatusHandler,
+	.ConfigButtons = IdlePageWatchStatusConfigButtons, };
 
-}
-
-void IdlePageWatchStatusExit()
-{
-
-}
-
-void IdlePageWatchStatusConfigButtons(void)
+void IdlePageWatchStatusConfigButtons(struct IdleInfo *Info)
 {
     /* map this mode's entry button to go back to the idle mode */
     EnableButtonAction(IDLE_MODE,
@@ -60,7 +59,7 @@ void IdlePageWatchStatusConfigButtons(void)
 /*
  * 	static void WatchStatusScreenHandler(void)
  */
-void IdlePageWatchStatusHandler(int IdleModeTimerId)
+int IdlePageWatchStatusHandler(struct IdleInfo *Info)
 {
 	  StopAllDisplayTimers();
 
@@ -197,15 +196,13 @@ void IdlePageWatchStatusHandler(int IdleModeTimerId)
 	  ConfigureIdleUserInterfaceButtons();
           */
 	  /* refresh the status page once a minute */
-	  SetupOneSecondTimer(IdleModeTimerId,
+	  SetupOneSecondTimer(Info->IdleModeTimerId,
 	                      ONE_SECOND*60,
 	                      NO_REPEAT,
 	                      WatchStatusMsg,
 	                      NO_MSG_OPTIONS);
 
-	  StartOneSecondTimer(IdleModeTimerId);
-
-
-
+	  StartOneSecondTimer(Info->IdleModeTimerId);
+          return 1;
 }
 

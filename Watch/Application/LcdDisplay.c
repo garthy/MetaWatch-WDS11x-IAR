@@ -231,7 +231,12 @@ static void DisplayTask(void *pvParameters)
   InitializeTimeFormat();
   InitializeDateFormat();
   AllocateDisplayTimers();
+  
+  InitIdlePage(IdleModeTimerId,
+	          pMyBuffer);
+  
   SetupSplashScreenTimeout();
+  
 
   DontChangeButtonConfiguration();
   DefaultApplicationAndNotificationButtonConfiguration();
@@ -280,7 +285,8 @@ static void DisplayQueueMessageHandler(tHostMsg* pMsg)
     break;
 
   case WatchStatusMsg:
-    IdlePageWatchStatusHandler(IdleModeTimerId);
+    IdlePageHandler(&IdlePageWatchStatus);
+    
     PrepareMyBufferForLcd(STARTING_ROW,NUM_LCD_ROWS);
     SendMyBufferToLcd(NUM_LCD_ROWS);
 	CurrentIdlePage = WatchStatusPage;
@@ -530,7 +536,9 @@ static void ConnectionStateChangeHandler(void)
       break;
     
     case WatchStatusPage:
-      IdlePageWatchStatusHandler(IdleModeTimerId);
+      IdlePageHandler(&IdlePageWatchStatus);
+      
+      //IdlePageWatchStatusHandler(IdleModeTimerId);
       PrepareMyBufferForLcd(STARTING_ROW,NUM_LCD_ROWS);
       SendMyBufferToLcd(NUM_LCD_ROWS);
 	  CurrentIdlePage = WatchStatusPage;
@@ -1097,7 +1105,7 @@ static void ConfigureIdleUserInterfaceButtons(void)
       break;
 
     case WatchStatusPage:
-    	 IdlePageWatchStatusConfigButtons();
+      IdlePageConfigButtons(&IdlePageWatchStatus);
     break;
 
     case QrCodePage:
