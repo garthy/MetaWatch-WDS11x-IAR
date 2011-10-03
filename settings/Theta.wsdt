@@ -12,20 +12,20 @@
           
           
           
-        <Column0>226</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+        <Column0>235</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Build>
         
         
         
         
-      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1215</ColumnWidth1><ColumnWidth2>324</ColumnWidth2><ColumnWidth3>81</ColumnWidth3></Build>
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1215</ColumnWidth1><ColumnWidth2>599</ColumnWidth2><ColumnWidth3>81</ColumnWidth3></Build>
       <Find-in-Files>
         
         
         
       <ColumnWidth0>580</ColumnWidth0><ColumnWidth1>82</ColumnWidth1><ColumnWidth2>994</ColumnWidth2></Find-in-Files>
-    <TerminalIO/></Static>
+    <TerminalIO/><Debug-Log><ColumnWidth0>19</ColumnWidth0><ColumnWidth1>1990</ColumnWidth1></Debug-Log></Static>
     <Windows>
       
       
@@ -37,7 +37,7 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>Watch</ExpandedNode><ExpandedNode>Watch/Application</ExpandedNode><ExpandedNode>Watch/Hardware</ExpandedNode><ExpandedNode>Watch/Library</ExpandedNode><ExpandedNode>Watch/Output</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>Watch</ExpandedNode><ExpandedNode>Watch/Application</ExpandedNode><ExpandedNode>Watch/Application/Digital</ExpandedNode><ExpandedNode>Watch/Common</ExpandedNode><ExpandedNode>Watch/Common/Application</ExpandedNode><ExpandedNode>Watch/Hardware</ExpandedNode><ExpandedNode>Watch/Library</ExpandedNode><ExpandedNode>Watch/Output</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
@@ -55,7 +55,7 @@
             <Factory>Find-in-Files</Factory>
             <Session/>
           </Tab>
-        </Tabs>
+        <Tab><Identity>TabID-16082-23455</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab></Tabs>
         
       <SelectedTab>0</SelectedTab></Wnd3></Windows>
     <Editor>
@@ -63,14 +63,14 @@
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\LcdTask.c</Filename><XPos>0</XPos><YPos>307</YPos><SelStart>8516</SelStart><SelEnd>8516</SelEnd></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Hardware\hal_board_type.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\LcdDisplay.c</Filename><XPos>0</XPos><YPos>265</YPos><SelStart>7782</SelStart><SelEnd>7782</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePage.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>530</SelStart><SelEnd>545</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageGameOfLife.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>131</SelStart><SelEnd>131</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageGameOfLife.c</Filename><XPos>0</XPos><YPos>9</YPos><SelStart>357</SelStart><SelEnd>378</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePage.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>78</SelStart><SelEnd>140</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\Buttons.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>81</SelStart><SelEnd>81</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\Display.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>81</SelStart><SelEnd>81</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Common\FreeRTOS\tasks.c</Filename><XPos>0</XPos><YPos>354</YPos><SelStart>16064</SelStart><SelEnd>16064</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Common\FreeRTOS\include\mpu_wrappers.h</Filename><XPos>0</XPos><YPos>110</YPos><SelStart>6802</SelStart><SelEnd>6802</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageWatchStatus.c</Filename><XPos>0</XPos><YPos>198</YPos><SelStart>5374</SelStart><SelEnd>5374</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageWatchStatus.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>115</SelStart><SelEnd>134</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageMain.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>908</SelStart><SelEnd>908</SelEnd></Tab><ActiveTab>11</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageMain.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>94</SelStart><SelEnd>94</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-02ce8600><key>iaridepm.enu1</key></Toolbar-02ce8600></Sizes></Row0></Top><Left><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>725</Bottom><Right>317</Right><x>-2</x><y>-2</y><xscreen>152</xscreen><yscreen>201</yscreen><sizeHorzCX>118750</sizeHorzCX><sizeHorzCY>204684</sizeHorzCY><sizeVertCX>249219</sizeVertCX><sizeVertCY>740326</sizeVertCY></Rect></Wnd2></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>212</Bottom><Right>1282</Right><x>-2</x><y>-2</y><xscreen>1284</xscreen><yscreen>214</yscreen><sizeHorzCX>1003125</sizeHorzCX><sizeHorzCY>217923</sizeHorzCY><sizeVertCX>118750</sizeVertCX><sizeVertCY>204684</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-00307258><key>iaridepm.enu1</key></Toolbar-00307258></Sizes></Row0></Top><Left><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>773</Bottom><Right>326</Right><x>-2</x><y>-2</y><xscreen>309</xscreen><yscreen>86</yscreen><sizeHorzCX>150879</sizeHorzCX><sizeHorzCY>80374</sizeHorzCY><sizeVertCX>160156</sizeVertCX><sizeVertCY>724299</sizeVertCY></Rect></Wnd2></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>252</Bottom><Right>2050</Right><x>-2</x><y>-2</y><xscreen>2052</xscreen><yscreen>254</yscreen><sizeHorzCX>1001953</sizeHorzCX><sizeHorzCY>237383</sizeHorzCY><sizeVertCX>150879</sizeVertCX><sizeVertCY>80374</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 

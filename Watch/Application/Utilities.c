@@ -206,7 +206,7 @@ unsigned char * GetSoftwareVersionString(void)
 /* called in each task but currently disabled */
 void CheckStackUsage(xTaskHandle TaskHandle,signed char* TaskName)
 {
-#if 0
+#if 1
   portBASE_TYPE HighWater = uxTaskGetStackHighWaterMark(TaskHandle);
   
 #if 1
