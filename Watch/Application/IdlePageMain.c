@@ -1,36 +1,16 @@
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-
 #include "Messages.h"
-#include "BufferPool.h"
-
-//#include "hal_board_type.h"
 #include "hal_rtc.h"
 #include "hal_battery.h"
 #include "hal_lcd.h"
-//#include "hal_lpm.h"
-
-//#include "DebugUart.h"
-//#include "Messages.h"
-//#include "LcdTask.h"
-//#include "SerialProfile.h"
-#include "MessageQueues.h"
-//#include "SerialRam.h"
 #include "OneSecondTimers.h"
 #include "Adc.h"
-//#include "Buttons.h"
-//#include "Statistics.h"
 #include "OSAL_Nv.h"
-//#include "Background.h"
 #include "NvIds.h"
 #include "Icons.h"
 #include "Fonts.h"
 #include "Display.h"
 #include "LcdBuffer.h"
 #include "Bluetooth.h"
-//#include "LinkAlarm.h"
-
 
 const unsigned char Am[10*4];
 const unsigned char Pm[10*4];
