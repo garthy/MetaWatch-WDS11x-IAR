@@ -1,21 +1,11 @@
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-
-#include "Messages.h"
-#include "BufferPool.h"
-#include "Buttons.h"
-#include "hal_lpm.h"
-#include "MessageQueues.h"
-//#include "IdlePageQrCode.h"
+#include <string.h>
+#include "hal_lcd.h"
 #include "Messages.h" //IDLE_MODE + msgs
 #include "Buttons.h"  // BUTTON_STATE
-//#include "hal_lpm.h" 
 #include "hal_board_type.h"// SW_
 #include "LcdDisplay.h"
-#include "Icons.h"
-#include "Menu.h"
 #include "OneSecondTimers.h"
+
 
 #define QRTIMER_TIMER   1
 #define QRBUTTON_LEFT  2
