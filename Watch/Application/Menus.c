@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include "Messages.h"
+#include "menu.h"
 #include "menus.h"
 #include "Bluetooth.h"
 #include "LinkAlarm.h"
 #include "Display.h"
+#include "LcdDisplay.h"
 #include "Buttons.h"
 #include "Icons.h"
 #include "hal_lpm.h"
-
+#include "IdlePageMain.h"
 
 const unsigned char pBluetooth[32*6] ={
 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 ,
@@ -188,10 +190,15 @@ const unsigned char NormalDateFormat[32*6] ={
 
 
 // From LCD Display. Think the lcd should be responsible for registering it's own config functions
-void ToggleSecondsHandler(void);
-void ToggleIdleBufferInvert(void);
-int GetDisplaySeconds();
 
+unsigned char const *RstPinIcon(void)
+{
+	if ( QueryRstPinEnabled() )
+	{
+	    return  pRstPinIcon;
+	}
+	return pNmiPinIcon;
+}
 
 unsigned char const * SecondsIcon(void)
 {
@@ -246,11 +253,11 @@ MENU_END
 */
 
 MENU_START(bluetooth)
-MENU_DYNAMIC_ICON_ACTION(bluetooth_get_discoverability_icon, bluetooth_toggle_discoverability, 0) // no update as the spp callback does the refresh
-MENU_DYNAMIC_ICON_ACTION(bluetooth_get_secure_smiple_pairing_icon, bluetooth_toggle_secure_smiple_pairing, MENU_FLAG_UPDATE)
+MENU_DYNAMIC_ICON_ACTION(BluetoothDiscoverabilityIcon, BluetoothToggleDiscoverability, 0) // no update as the spp callback does the refresh
+MENU_DYNAMIC_ICON_ACTION(BluetoothSecureSmiplePairingIcon, BluetoothToggleSecureSmiplePairing, MENU_FLAG_UPDATE)
 MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
-MENU_DYNAMIC_ICON_ACTION(bluetooth_get_status_icon, bluetooth_toggle_bluetooth, 0) // no update as the spp callback does the refresh
-MENU_MSG_BUTTON(ListPairedDevicesMsg, NO_MSG_OPTIONS, pResetButtonIcon, BUTTON_STATE_PRESSED, MENU_FLAG_UPDATE)
+MENU_DYNAMIC_ICON_ACTION(BluetoothStatusIcon, BluetoothToggle, 0) // no update as the spp callback does the refresh
+MENU_MSG_BUTTON(ListPairedDevicesMsg, NO_MSG_OPTIONS, pBluetoothListIcon, BUTTON_STATE_IMMEDIATE, MENU_FLAG_UPDATE)
 MENU_END
 
 MENU_START(clock)
@@ -285,13 +292,14 @@ MENU_SUB(bluetooth, pBluetooth, MENU_FLAG_UPDATE)
 MENU_SUB(clock, pClockSettings, MENU_FLAG_UPDATE)
 MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
 MENU_SUB(dev, pDevSettings, MENU_FLAG_UPDATE)
-MENU_BLANK()
+MENU_MSG_BUTTON(WatchStatusMsg,  NO_MSG_OPTIONS, pWatchStatusPageIcon, BUTTON_STATE_IMMEDIATE, MENU_FLAG_UPDATE)
 MENU_END
 
 
-void menu_init(void)
+
+void menus_init(void)
 {
-	menu_push(&TopLevel);
+	menu_init(&TopLevel);
         printf("Testing output\n");
 }
 

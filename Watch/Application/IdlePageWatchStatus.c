@@ -12,8 +12,9 @@
 #include "Buttons.h"  // BUTTON_STATE
 //#include "hal_lpm.h"
 #include "hal_board_type.h"// SW_
-#include "LcdDisplay.h"
 #include "Display.h"
+#include "LcdDisplay.h"
+#include "LcdBuffer.h"
 #include "Icons.h"
 #include "Menu.h"
 #include "OneSecondTimers.h"

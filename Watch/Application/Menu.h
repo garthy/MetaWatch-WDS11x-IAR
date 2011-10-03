@@ -112,11 +112,8 @@ struct menu{
 #define MENU_END }};
 
 
-struct menu const * menu_current(void);
-void menu_push(struct menu const *m);
-void menu_pop();
-int menu_button_handler(unsigned char MsgOptions);
+void menu_init(struct menu const *m);
 void menu_config_buttons(void);
-unsigned char const * menu_get_icon(struct menu_item const * item);
-
+void DrawMenu();
+int menu_button_handler(unsigned char MsgOptions);
 #endif /* METAWATCH_MENU_H */

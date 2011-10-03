@@ -7,8 +7,7 @@
 #include "Bluetooth.h"
 #include "Icons.h"
 
-
-void bluetooth_toggle_bluetooth(void)
+void BluetoothToggle(void)
 {
 	tHostMsg* pOutgoingMsg;
     if ( QueryConnectionState() != Initializing )
@@ -27,7 +26,7 @@ void bluetooth_toggle_bluetooth(void)
       RouteMsg(&pOutgoingMsg);
       }
 }
-unsigned char const * bluetooth_get_status_icon()
+unsigned char const * BluetoothStatusIcon()
 {
 	if ( QueryConnectionState() == Initializing )
 	{
@@ -40,7 +39,7 @@ unsigned char const * bluetooth_get_status_icon()
 	return pBluetoothOffIcon;
 }
 
-void bluetooth_toggle_discoverability(void)
+void BluetoothToggleDiscoverability(void)
 {
 	tHostMsg* pOutgoingMsg;
 	if ( QueryConnectionState() != Initializing )
@@ -60,7 +59,7 @@ void bluetooth_toggle_discoverability(void)
 	}
 }
 
-unsigned char const * bluetooth_get_discoverability_icon(void)
+unsigned char const * BluetoothDiscoverabilityIcon(void)
 {
 	if ( QueryConnectionState() == Initializing )
 	{
@@ -73,7 +72,7 @@ unsigned char const * bluetooth_get_discoverability_icon(void)
 	return pUnpairableIcon;
 }
 
-void bluetooth_toggle_secure_smiple_pairing(void)
+void BluetoothToggleSecureSmiplePairing(void)
 {
 	tHostMsg* pOutgoingMsg;
     if ( QueryConnectionState() != Initializing )
@@ -85,7 +84,7 @@ void bluetooth_toggle_secure_smiple_pairing(void)
     }
 }
 
-unsigned char const * bluetooth_get_secure_smiple_pairing_icon(void)
+unsigned char const * BluetoothSecureSmiplePairingIcon(void)
 {
 	if ( QueryConnectionState() == Initializing )
 	{

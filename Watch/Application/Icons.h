@@ -97,5 +97,6 @@ extern const unsigned char pPhoneDisconnectedIdlePageIcon[20*2];
 
 extern const unsigned char pBatteryChargingIdlePageIconType2[30*2];
 extern const unsigned char pLowBatteryIdlePageIconType2[30*2];
-
+extern const unsigned char pBluetoothListIcon[32*6];
+extern const unsigned char pWatchStatusPageIcon[32*6];
 #endif /*ICONS_H*/

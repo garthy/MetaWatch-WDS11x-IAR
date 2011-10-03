@@ -41,6 +41,7 @@ void InitializeDisplayTask(void);
 #define PHONE_CONTROLS_TOP       ( 1 )
 #define IDLE_BUFFER_CONFIG_MASK  ( BIT0 )
 
+
 /*! The phone can control all of the idle buffer or the bottom 2/3.
  * 
  * \return character indicating who controls top third of screen.  When it is
@@ -56,6 +57,7 @@ unsigned char GetIdleBufferConfiguration(void);
  * \return 1 when display should be inverted 
  */
 unsigned char QueryInvertDisplay(void);
+void ToggleIdleBufferInvert(void);
 
 /*! Get pointer to an LCD screen template
  *
@@ -71,46 +73,8 @@ unsigned char* GetTemplatePointer(unsigned char TemplateSelect);
 unsigned char QueryIdlePageNormal(void);
 
 /* the internal buffer */
-#define STARTING_ROW                  ( 0 )
-#define WATCH_DRAWN_IDLE_BUFFER_ROWS  ( 30 )
-#define PHONE_IDLE_BUFFER_ROWS        ( 66 )
 
 
-unsigned char WriteString(unsigned char* pString,
-                          unsigned char RowOffset,
-                          unsigned char ColumnOffset,
-                          unsigned char AddSpace);
-
-#define ADD_SPACE_AT_END      ( 1 )
-#define DONT_ADD_SPACE_AT_END ( 0 )
-
-void AddDecimalPoint8w10h(unsigned char RowOffset,
-                                 unsigned char ColumnOffset);
-
-void WriteSpriteDigit(unsigned char Digit,
-                      unsigned char RowOffset,
-                      unsigned char ColumnOffset,
-                      signed char ShiftAmount);
-
-void WriteSpriteChar(unsigned char Char,
-					 unsigned char RowOffset,
-                     unsigned char ColumnOffset);
-
-// Called before anyupdates to the screen
 void StopAllDisplayTimers(void);
-
-void FillMyBuffer(unsigned char StartingRow,
-                         unsigned char NumberOfRows,
-                         unsigned char FillValue);
-
-void CopyRowsIntoMyBuffer(unsigned char const* pImage,
-                                 unsigned char StartingRow,
-                                 unsigned char NumberOfRows);
-
-void CopyColumnsIntoMyBuffer(unsigned char const* pImage,
-                                    unsigned char StartingRow,
-                                    unsigned char NumberOfRows,
-                                    unsigned char StartingColumn,
-                                    unsigned char NumberOfColumns);
 
 #endif /* LCD_DISPLAY_H */

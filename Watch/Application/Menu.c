@@ -12,12 +12,11 @@
 #include "Display.h"
 #include "Icons.h"
 #include "Menu.h"
-//#include "Menus.h"
+#include "LcdBuffer.h"
+
 
 #include "hal_board_type.h"
-//#include "hal_rtc.h"
-//#include "hal_battery.h"
-//#include "hal_lcd.h"
+
 
 /* Also used as indexs into menu struct */
 #define MENU_BUTTON_F 0x0
@@ -37,6 +36,12 @@
 
 struct menu const *menustack[MENU_MAX_DEPTH] = {0};
 signed char pos = -1;
+
+void menu_push(struct menu const *m);
+void menu_init(struct menu const *m)
+{
+  menu_push(m);
+}
 
 int istop()
 {
@@ -190,3 +195,62 @@ void menu_config_buttons(void)
                        MenuButtonMsg,
                        MENU_BUTTON_EXIT);
 }
+
+static void DrawCommonMenuIcons(void)
+{
+	/*
+  CopyColumnsIntoMyBuffer(pNextIcon,
+                          BUTTON_ICON_B_E_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          RIGHT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
+                          */
+
+  /*CopyColumnsIntoMyBuffer(pLedIcon,
+                          BUTTON_ICON_C_D_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          LEFT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);*/
+
+  CopyColumnsIntoMyBuffer(pExitIcon,
+                          BUTTON_ICON_C_D_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          RIGHT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
+}
+
+void DrawMenu()
+{
+  const struct menu * const menu = menu_current();
+  DrawCommonMenuIcons();
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[0])),
+                          BUTTON_ICON_A_F_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          LEFT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
+
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[1])),
+                            BUTTON_ICON_B_E_ROW,
+                            BUTTON_ICON_SIZE_IN_ROWS,
+                            LEFT_BUTTON_COLUMN,
+                            BUTTON_ICON_SIZE_IN_COLUMNS);
+
+  /* LED */
+
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[3])),
+                          BUTTON_ICON_A_F_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          RIGHT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
+
+
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[4])),
+                          BUTTON_ICON_B_E_ROW,
+                          BUTTON_ICON_SIZE_IN_ROWS,
+                          RIGHT_BUTTON_COLUMN,
+                          BUTTON_ICON_SIZE_IN_COLUMNS);
+
+  /* EXIT */
+}
+
+
