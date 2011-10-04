@@ -37,13 +37,13 @@
 struct menu const *menustack[MENU_MAX_DEPTH] = {0};
 signed char pos = -1;
 
-void menu_push(struct menu const *m);
+static void menu_push(struct menu const *m);
 void menu_init(struct menu const *m)
 {
   menu_push(m);
 }
 
-int istop()
+static int istop()
 {
 	return (pos == 0);
 }
@@ -53,7 +53,7 @@ struct menu const *  menu_current(void)
 	return menustack[pos];
 }
 
-void menu_pop()
+static void menu_pop()
 {
 	if(pos > 0)
 	{
@@ -62,7 +62,7 @@ void menu_pop()
         menu_config_buttons();
 }
 
-void menu_push(struct menu const *m)
+static void menu_push(struct menu const *m)
 {
 	if(pos < (MENU_MAX_DEPTH-1))
 	{
@@ -235,13 +235,18 @@ void DrawMenu()
                             LEFT_BUTTON_COLUMN,
                             BUTTON_ICON_SIZE_IN_COLUMNS);
 
-  /* LED */
+  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[2])),
+                           BUTTON_ICON_C_D_ROW,
+                           BUTTON_ICON_SIZE_IN_ROWS,
+                           LEFT_BUTTON_COLUMN,
+                           BUTTON_ICON_SIZE_IN_COLUMNS);
+
 
   CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[3])),
-                          BUTTON_ICON_A_F_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          RIGHT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);
+                           BUTTON_ICON_A_F_ROW,
+                           BUTTON_ICON_SIZE_IN_ROWS,
+                           RIGHT_BUTTON_COLUMN,
+                           BUTTON_ICON_SIZE_IN_COLUMNS);
 
 
   CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[4])),
@@ -249,8 +254,6 @@ void DrawMenu()
                           BUTTON_ICON_SIZE_IN_ROWS,
                           RIGHT_BUTTON_COLUMN,
                           BUTTON_ICON_SIZE_IN_COLUMNS);
-
-  /* EXIT */
 }
 
 
