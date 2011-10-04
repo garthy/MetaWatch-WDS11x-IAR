@@ -102,4 +102,13 @@ extern const unsigned char pBatteryChargingIdlePageIconType2[30*2];
 extern const unsigned char pLowBatteryIdlePageIconType2[30*2];
 extern const unsigned char pBluetoothListIcon[32*6];
 extern const unsigned char pWatchStatusPageIcon[32*6];
+
+extern const unsigned char pMusicBack[32*6];
+extern const unsigned char pMusicNext[32*6];
+extern const unsigned char pMusicPlay[32*6];
+extern const unsigned char pMusicStop[32*6];
+extern const unsigned char pMusicIcon[32*6];
+extern const unsigned char pMusicToggle[32*6];
+extern const unsigned char pMusicVolDown[32*6];
+extern const unsigned char pMusicVolUp[32*6];
 #endif /*ICONS_H*/
