@@ -255,7 +255,7 @@ MENU_END
 MENU_START(bluetooth)
 MENU_DYNAMIC_ICON_ACTION(BluetoothDiscoverabilityIcon, BluetoothToggleDiscoverability, 0) // no update as the spp callback does the refresh
 MENU_DYNAMIC_ICON_ACTION(BluetoothSecureSmiplePairingIcon, BluetoothToggleSecureSmiplePairing, MENU_FLAG_UPDATE)
-MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
+MENU_DYNAMIC_ICON_ACTION(BluetoothSniffModeIcon, BluetoothSniffModeToggle, MENU_FLAG_UPDATE)
 MENU_DYNAMIC_ICON_ACTION(BluetoothStatusIcon, BluetoothToggle, 0) // no update as the spp callback does the refresh
 MENU_MSG_BUTTON(ListPairedDevicesMsg, NO_MSG_OPTIONS, pBluetoothListIcon, BUTTON_STATE_IMMEDIATE, MENU_FLAG_UPDATE)
 MENU_END

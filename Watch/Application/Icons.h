@@ -56,6 +56,9 @@ extern const unsigned char pSecondsOffMenuIcon[32*6];
 extern const unsigned char pShippingModeIcon[32*6];
 extern const unsigned char hour24[32*6];
 extern const unsigned char hour12[32*6];
+extern const unsigned char pSniffDefaultIcon[32*6];
+extern const unsigned char pSniffOffIcon[32*6];
+extern const unsigned char pSniffDebugIcon[32*6];
 
 extern const unsigned char pBootPageBluetoothOffSwash[32*12];
 extern const unsigned char pBootPageConnectionSwash[32*12];

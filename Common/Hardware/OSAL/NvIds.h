@@ -53,7 +53,7 @@
 #define NVID_CONNECTION_DEBUG     ( 0x1003 )
 #define NVID_RSTNMI_CONFIGURATION ( 0x1004 )
 #define NVID_MASTER_RESET         ( 0x1005 )
-
+#define NVID_SNIFF_MODE           ( 0x1006 )
 /* */
 #define NVID_LOW_BATTERY_WARNING_LEVEL    ( 0x2001 )
 #define NVID_LOW_BATTERY_BTOFF_LEVEL      ( 0x2001 )

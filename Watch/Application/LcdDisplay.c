@@ -230,6 +230,7 @@ static void DisplayTask(void *pvParameters)
   InitializeLinkAlarmEnable();
   InitializeTimeFormat();
   InitializeDateFormat();
+  BluetoothSniffModeInitialize();
   AllocateDisplayTimers();
   
   InitIdlePage(IdleModeTimerId,
