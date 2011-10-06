@@ -11,6 +11,7 @@
 #include "hal_lpm.h"
 #include "IdlePageMain.h"
 #include "MusicMenu.h"
+#include "MenuApp.h"
 
 const unsigned char pBluetooth[32*6] ={
 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 ,
@@ -282,8 +283,8 @@ MENU_END
 MENU_START(dev2)
 MENU_STATIC_ICON_ACTION(pNormalDisplayMenuIcon,ToggleIdleBufferInvert, MENU_FLAG_UPDATE)
 MENU_DYNAMIC_ICON_ACTION(LinkAlarmIcon, ToggleLinkAlarmEnable, MENU_FLAG_UPDATE)
-MENU_STATIC_ICON_ACTION(pLedIcon, 0, 0)
 MENU_STATIC_ICON_ACTION(pRstPinIcon, ToggleRstPin, MENU_FLAG_UPDATE)
+MENU_STATIC_ICON_ACTION(pLedIcon,MenuAppStart,MENU_FLAG_UPDATE)
 MENU_NEXT(dev, MENU_FLAG_UPDATE)
 MENU_END
 
@@ -291,8 +292,8 @@ MENU_END
 MENU_START(TopLevel)
 MENU_SUB(bluetooth, pBluetooth, MENU_FLAG_UPDATE)
 MENU_SUB(clock, pClockSettings, MENU_FLAG_UPDATE)
-MENU_SUB(dev, pDevSettings, MENU_FLAG_UPDATE)
 MENU_SUB(MusicMenu, pMusicIcon, MENU_FLAG_UPDATE)
+MENU_SUB(dev, pDevSettings, MENU_FLAG_UPDATE)
 MENU_MSG_BUTTON(WatchStatusMsg,  NO_MSG_OPTIONS, pWatchStatusPageIcon, BUTTON_STATE_IMMEDIATE, MENU_FLAG_UPDATE)
 MENU_END
 

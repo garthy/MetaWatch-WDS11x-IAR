@@ -544,6 +544,7 @@ typedef enum
 #define MENU_MODE_OPTION_PAGE2               ( 0x02 )
 #define MENU_MODE_OPTION_PAGE3               ( 0x03 )
 #define MENU_MODE_OPTION_UPDATE_CURRENT_PAGE ( 0x04 )
+#define MENU_MODE_OPTION_APP ( 0x05 )
 
 
 /* Menu Button Message Options */

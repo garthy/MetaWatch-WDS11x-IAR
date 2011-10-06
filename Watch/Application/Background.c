@@ -49,7 +49,7 @@
 #include "Statistics.h"
 #include "OSAL_Nv.h"
 #include "NvIds.h"
-
+#include "MenuApp.h"
 static void BackgroundTask(void *pvParameters);
 
 static void BackgroundMessageHandler(tHostMsg* pMsg);
@@ -293,9 +293,14 @@ static void BackgroundMessageHandler(tHostMsg* pMsg)
   case NvalOperationMsg:
     NvalOperationHandler(pMsg);
     break;
-    
+
   case GeneralPurposeWatchMsg:
-    /* insert handler here */
+  	  switch(pMsg->Options)
+  	  {
+  	  case MENU_MSG_TYPE:
+  		  MenuAppStart();//pMsg->pPayload);
+  		  break;
+  	  }
     break;
     
   default:

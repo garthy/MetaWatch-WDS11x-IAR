@@ -22,11 +22,19 @@ struct menu_item_menu
 
 typedef unsigned char const *  (* const menu_icon_func)(void);
 typedef void ( * const  menu_action_func)(void);
+typedef void ( * menu_action_func_item)(int id);
 
 struct menu_item_icon_action
 {
     unsigned char const * const pIcon;
     const menu_action_func action;
+};
+
+struct menu_item_txt_action
+{
+    char *text;
+    menu_action_func_item action;
+    char id;
 };
 
 
@@ -36,7 +44,7 @@ struct menu_item_geticon_action
 	const menu_action_func action;
 };
 
-typedef enum {menu_null, menu_msg, menu_menu, menu_action, menu_icon_action} menu_enum;
+typedef enum {menu_null, menu_msg, menu_menu, menu_action, menu_icon_action, menu_text_action} menu_enum;
 
 #define MENU_FLAG_UPDATE 0x1
 #define MENU_ITEM_MENU_PUSH 0x2
@@ -51,6 +59,7 @@ struct menu_item {
 		struct menu_item_menu imenu;
 		struct menu_item_icon_action iaction;
 		struct menu_item_geticon_action iiconaction;
+		struct menu_item_txt_action itext;
 	}u;
 };
 
@@ -58,7 +67,7 @@ struct menu_item {
 
 struct menu{
 	/*const struct menu *next;*/
-	const struct menu_item items[MENU_ITEMS];
+	struct menu_item items[MENU_ITEMS];
 };
 
 #define MENU_DEF(name) extern const struct menu name;
@@ -81,6 +90,14 @@ struct menu{
     .flags = menuflags, \
 	.u.iaction.pIcon =  picon,\
 	.u.iaction.action = actionfunc,\
+    },
+
+#define MENU_TEXT_ACTION(picon, actionfunc, menuflags) \
+    { .type = menu_text,\
+	.ButtonPressType = BUTTON_STATE_IMMEDIATE, \
+    .flags = menuflags, \
+	.u.itext.text =  picon,\
+	.u.itext.action = actionfunc,\
     },
 
 #define MENU_MSG_BUTTON(msgid, option, picon, buttonpresstype, menuflags) \
@@ -116,4 +133,5 @@ void menu_init(struct menu const *m);
 void menu_config_buttons(void);
 void DrawMenu();
 int menu_button_handler(unsigned char MsgOptions);
+void menu_set_app(struct menu const *m);
 #endif /* METAWATCH_MENU_H */

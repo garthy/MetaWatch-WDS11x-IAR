@@ -55,6 +55,7 @@
 #include "Bluetooth.h"
 #include "LinkAlarm.h"
 #include "Menu.h"
+#include "MenuApp.h"
 #include "Menus.h"
 #include "IdlePage.h"
 #include "IdlePageMain.h"
@@ -168,11 +169,8 @@ static unsigned char pBluetoothAddress[12+1];
 static unsigned char pBluetoothName[12+1];
 
 /******************************************************************************/
-
 #ifdef FONT_TESTING
-static unsigned char gBitColumnMask;
-static unsigned char gColumn;
-static unsigned char gRow;
+
 
 static void WriteFontCharacter(unsigned char Character);
 static void WriteFontString(unsigned char* pString);
@@ -307,7 +305,7 @@ static void DisplayQueueMessageHandler(tHostMsg* pMsg)
 	  }
 
 	  IdlePageQrCodeButtonHandler(pMsg->Options);
-#else
+//#else
           if(CurrentIdlePage != QrCodePage)
 	  {
               //copy(lowerhalf to pMyBuffer)
@@ -768,7 +766,7 @@ static void DrawConnectionScreen()
   
   CopyRowsIntoMyBuffer(pSwash,WATCH_DRAWN_IDLE_BUFFER_ROWS+1,32);
     
-#ifdef FONT_TESTING
+#ifdef XXFONT_TESTING
   
   gRow = 65;
   gColumn = 0;
@@ -897,6 +895,7 @@ static void MenuModeHandler(unsigned char MsgOptions)
   case MENU_MODE_OPTION_PAGE1:
   case MENU_MODE_OPTION_PAGE2:
   case MENU_MODE_OPTION_PAGE3:
+  case MENU_MODE_OPTION_APP:
 	CurrentIdlePage = MenuPage;
     DrawMenu();
     ConfigureIdleUserInterfaceButtons();
@@ -904,6 +903,9 @@ static void MenuModeHandler(unsigned char MsgOptions)
     
   case MENU_MODE_OPTION_UPDATE_CURRENT_PAGE:
     DrawMenu();
+
+
+      
 
   }
 
@@ -1112,7 +1114,7 @@ static void ConfigureIdleUserInterfaceButtons(void)
     case QrCodePage:
 #ifdef SPACEINV
     	IdlePageQrCodeConfigButtons();
-#else
+//#else
 //    	IdlePageGameOfLifeConfigButtons();
         IdlePageConfigButtons(&IdlePageGameOfLife);
 #endif
@@ -1214,6 +1216,9 @@ static void SaveIdleBufferConfig(void)
 
 
 #ifdef FONT_TESTING
+static unsigned char gBitColumnMask;
+static unsigned char gColumn;
+static unsigned char gRow;
 static unsigned int CharacterMask;
 static unsigned char CharacterRows;
 static unsigned char CharacterWidth;

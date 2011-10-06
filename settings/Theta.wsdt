@@ -12,7 +12,7 @@
           
           
           
-        <Column0>235</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+        <Column0>311</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Build>
         
@@ -29,7 +29,7 @@
     <Windows>
       
       
-    <Wnd2>
+    <Wnd0>
         <Tabs>
           <Tab>
             <Identity>TabID-25128-12010</Identity>
@@ -37,11 +37,11 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>Watch</ExpandedNode><ExpandedNode>Watch/Application</ExpandedNode><ExpandedNode>Watch/Application/Digital</ExpandedNode><ExpandedNode>Watch/Common</ExpandedNode><ExpandedNode>Watch/Common/Application</ExpandedNode><ExpandedNode>Watch/Hardware</ExpandedNode><ExpandedNode>Watch/Library</ExpandedNode><ExpandedNode>Watch/Output</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>Watch</ExpandedNode><ExpandedNode>Watch/Application</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
-      <SelectedTab>0</SelectedTab></Wnd2><Wnd3>
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
         <Tabs>
           <Tab>
             <Identity>TabID-11243-12066</Identity>
@@ -57,20 +57,20 @@
           </Tab>
         <Tab><Identity>TabID-16082-23455</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab></Tabs>
         
-      <SelectedTab>0</SelectedTab></Wnd3></Windows>
+      <SelectedTab>0</SelectedTab></Wnd1></Windows>
     <Editor>
       
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\LcdDisplay.c</Filename><XPos>0</XPos><YPos>265</YPos><SelStart>7782</SelStart><SelEnd>7782</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePage.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>530</SelStart><SelEnd>545</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageGameOfLife.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>131</SelStart><SelEnd>131</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageGameOfLife.c</Filename><XPos>0</XPos><YPos>9</YPos><SelStart>357</SelStart><SelEnd>378</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePage.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>78</SelStart><SelEnd>140</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\Buttons.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>81</SelStart><SelEnd>81</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\Display.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>81</SelStart><SelEnd>81</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Common\FreeRTOS\tasks.c</Filename><XPos>0</XPos><YPos>354</YPos><SelStart>16064</SelStart><SelEnd>16064</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Common\FreeRTOS\include\mpu_wrappers.h</Filename><XPos>0</XPos><YPos>110</YPos><SelStart>6802</SelStart><SelEnd>6802</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageWatchStatus.c</Filename><XPos>0</XPos><YPos>198</YPos><SelStart>5374</SelStart><SelEnd>5374</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageWatchStatus.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>115</SelStart><SelEnd>134</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageMain.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>908</SelStart><SelEnd>908</SelEnd></Tab><ActiveTab>11</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\IdlePageMain.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>94</SelStart><SelEnd>94</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\HuffManEngText.c</Filename><XPos>0</XPos><YPos>47</YPos><SelStart>2418</SelStart><SelEnd>2418</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\main.c</Filename><XPos>0</XPos><YPos>46</YPos><SelStart>1938</SelStart><SelEnd>1938</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\MenuApp.c</Filename><XPos>0</XPos><YPos>66</YPos><SelStart>1944</SelStart><SelEnd>1944</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Watch\Application\Menu.c</Filename><XPos>0</XPos><YPos>152</YPos><SelStart>2796</SelStart><SelEnd>2796</SelEnd></Tab><ActiveTab>3</ActiveTab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-00307258><key>iaridepm.enu1</key></Toolbar-00307258></Sizes></Row0></Top><Left><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>773</Bottom><Right>326</Right><x>-2</x><y>-2</y><xscreen>309</xscreen><yscreen>86</yscreen><sizeHorzCX>150879</sizeHorzCX><sizeHorzCY>80374</sizeHorzCY><sizeVertCX>160156</sizeVertCX><sizeVertCY>724299</sizeVertCY></Rect></Wnd2></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>252</Bottom><Right>2050</Right><x>-2</x><y>-2</y><xscreen>2052</xscreen><yscreen>254</yscreen><sizeHorzCX>1001953</sizeHorzCX><sizeHorzCY>237383</sizeHorzCY><sizeVertCX>150879</sizeVertCX><sizeVertCY>80374</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-00d37258><key>iaridepm.enu1</key></Toolbar-00d37258></Sizes></Row0><Row1><Sizes/></Row1><Row2><Sizes/></Row2><Row3><Sizes/></Row3><Row4><Sizes/></Row4><Row5><Sizes/></Row5><Row6><Sizes/></Row6><Row7><Sizes/></Row7><Row8><Sizes/></Row8><Row9><Sizes/></Row9></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>820</Bottom><Right>402</Right><x>-2</x><y>-2</y><xscreen>190</xscreen><yscreen>28</yscreen><sizeHorzCX>92773</sizeHorzCX><sizeHorzCY>26168</sizeHorzCY><sizeVertCX>197266</sizeVertCX><sizeVertCY>768224</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>205</Bottom><Right>2050</Right><x>-2</x><y>-2</y><xscreen>2052</xscreen><yscreen>207</yscreen><sizeHorzCX>1001953</sizeHorzCX><sizeHorzCY>193458</sizeHorzCY><sizeVertCX>92773</sizeVertCX><sizeVertCY>26168</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 

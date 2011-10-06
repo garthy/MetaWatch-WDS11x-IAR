@@ -35,7 +35,13 @@
 #define MENU_MAX_DEPTH 5
 
 struct menu const *menustack[MENU_MAX_DEPTH] = {0};
+struct menu const *app_menu = NULL;
 signed char pos = -1;
+
+void menu_set_app(struct menu const *m)
+{
+	app_menu = m;
+}
 
 static void menu_push(struct menu const *m);
 void menu_init(struct menu const *m)
@@ -50,6 +56,10 @@ static int istop()
 
 struct menu const *  menu_current(void)
 {
+	if(app_menu)
+	{
+		return app_menu;
+	}
 	return menustack[pos];
 }
 
@@ -101,7 +111,8 @@ int menu_handle_button(const struct menu_item *i)
 	{
 	case menu_msg:
 		// Nothing this should be handled by the framework
-                // In fact we should never get here!
+        // In fact we should never get here!
+		// Hmm. I'm thinking this should be handled buy the framework
 		break;
 	case menu_menu:
 		if((i->flags & MENU_ITEM_MENU_PUSH) == MENU_ITEM_MENU_PUSH)
@@ -124,6 +135,11 @@ int menu_handle_button(const struct menu_item *i)
 			i->u.iiconaction.action();
 		}
 		break;
+	case menu_text_action:
+		if(i->u.itext.action)
+		{
+			i->u.itext.action(i->u.itext.id);
+		}
 	default:
 		break;
 	}
@@ -136,7 +152,18 @@ int menu_handle_button(const struct menu_item *i)
 
 int menu_button_handler(unsigned char MsgOptions)
 {
-	char refresh = 0;
+        char refresh = 0;
+	if(menu_current() == app_menu)
+	{
+		tHostMsg* pOutgoingMsg;
+		app_menu = NULL;
+		BPL_AllocMessageBuffer(&pOutgoingMsg);
+		pOutgoingMsg->Type = IdleUpdate;
+		RouteMsg(&pOutgoingMsg);
+	}
+	else
+	{
+	
 	if(MsgOptions < MENU_ITEMS)
 	{
             refresh = menu_handle_button(&(menu_current()->items[MsgOptions]));
@@ -170,6 +197,7 @@ int menu_button_handler(unsigned char MsgOptions)
 			menu_pop();
 			refresh = 1;
 		}
+	}
 	}
 	return refresh;
 }
@@ -206,11 +234,11 @@ static void DrawCommonMenuIcons(void)
                           BUTTON_ICON_SIZE_IN_COLUMNS);
                           */
 
-  CopyColumnsIntoMyBuffer(pLedIcon,
+  /*CopyColumnsIntoMyBuffer(pLedIcon,
                           BUTTON_ICON_C_D_ROW,
                           BUTTON_ICON_SIZE_IN_ROWS,
                           LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);
+                          BUTTON_ICON_SIZE_IN_COLUMNS);*/
 
   CopyColumnsIntoMyBuffer(pExitIcon,
                           BUTTON_ICON_C_D_ROW,
@@ -219,41 +247,38 @@ static void DrawCommonMenuIcons(void)
                           BUTTON_ICON_SIZE_IN_COLUMNS);
 }
 
+
+static void DrawItem(struct menu_item const *item, unsigned char row, unsigned char col)
+{
+	  if(item->type == menu_text_action)
+	  {
+		  if(item->u.itext.text)
+		  WriteString((unsigned char*)item->u.itext.text,
+	              	  row,
+	              	  col,
+	              	  0);
+	  }
+	  else
+	  {
+		  CopyColumnsIntoMyBuffer(menu_get_icon(item),
+				  row,
+				  BUTTON_ICON_SIZE_IN_ROWS,
+				  col,
+				  BUTTON_ICON_SIZE_IN_COLUMNS);
+	  }
+}
+
+
 void DrawMenu()
 {
   const struct menu * const menu = menu_current();
   DrawCommonMenuIcons();
-  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[0])),
-                          BUTTON_ICON_A_F_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          LEFT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);
+  DrawItem(&(menu->items[0]), BUTTON_ICON_A_F_ROW,LEFT_BUTTON_COLUMN);
+  DrawItem(&(menu->items[1]), BUTTON_ICON_B_E_ROW,LEFT_BUTTON_COLUMN);
+  DrawItem(&(menu->items[2]), BUTTON_ICON_C_D_ROW,LEFT_BUTTON_COLUMN);
+  DrawItem(&(menu->items[3]), BUTTON_ICON_A_F_ROW,RIGHT_BUTTON_COLUMN);
+  DrawItem(&(menu->items[4]), BUTTON_ICON_B_E_ROW,RIGHT_BUTTON_COLUMN);
 
-  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[1])),
-                            BUTTON_ICON_B_E_ROW,
-                            BUTTON_ICON_SIZE_IN_ROWS,
-                            LEFT_BUTTON_COLUMN,
-                            BUTTON_ICON_SIZE_IN_COLUMNS);
-
-  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[2])),
-                           BUTTON_ICON_C_D_ROW,
-                           BUTTON_ICON_SIZE_IN_ROWS,
-                           LEFT_BUTTON_COLUMN,
-                           BUTTON_ICON_SIZE_IN_COLUMNS);
-
-
-  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[3])),
-                           BUTTON_ICON_A_F_ROW,
-                           BUTTON_ICON_SIZE_IN_ROWS,
-                           RIGHT_BUTTON_COLUMN,
-                           BUTTON_ICON_SIZE_IN_COLUMNS);
-
-
-  CopyColumnsIntoMyBuffer(menu_get_icon(&(menu->items[4])),
-                          BUTTON_ICON_B_E_ROW,
-                          BUTTON_ICON_SIZE_IN_ROWS,
-                          RIGHT_BUTTON_COLUMN,
-                          BUTTON_ICON_SIZE_IN_COLUMNS);
 }
 
 

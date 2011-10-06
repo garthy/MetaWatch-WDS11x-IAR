@@ -1308,7 +1308,7 @@
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
@@ -4769,6 +4769,15 @@
       </excluded>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Application\Fonts.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Application\HuffManEngText.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Application\HuffmanEngText.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Application\Icons.c</name>
     </file>
     <file>
@@ -4779,9 +4788,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\Application\IdlePage.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Application\IdlePageGameOfLife.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Application\IdlePageGameOfLife.h</name>
@@ -4846,6 +4852,12 @@
       <name>$PROJ_DIR$\..\Application\Menu.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Application\MenuApp.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Application\MenuApp.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Application\Menus.c</name>
     </file>
     <file>
@@ -4853,6 +4865,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\Application\MessageQueues.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Application\MusicMenu.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Application\MusicMenu.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Application\OledDisplay.c</name>
