@@ -111,4 +111,13 @@ extern const unsigned char pMusicIcon[32*6];
 extern const unsigned char pMusicToggle[32*6];
 extern const unsigned char pMusicVolDown[32*6];
 extern const unsigned char pMusicVolUp[32*6];
+
+extern const unsigned char NormalDateFormat[32*6];
+extern const unsigned char pStupidDateFormat[32*6];
+extern const unsigned char pDevSettings[32*6];
+extern const unsigned char pClockSettings[32*6];
+extern const unsigned char pBluetooth[32*6];
+
+
 #endif /*ICONS_H*/
+
