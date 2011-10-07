@@ -17,40 +17,6 @@ static char payload[] = {30,235, 174, 189, 39, 11, 202, 231, 70, 7, 205, 248, 18
 static char buf[(26*2)+1];
 static struct menu MenuApp;
 
-void decode(char *s, int count,  char *target);
-void decode(char *s, int count, char *target)
-{
-  char i;
-  char index = 0;
-  char val;
-  char charcount = 0;
-  const struct node *n = &root;
-  while(index < count)
-  {
-    val = s[index++];
-    for(i = 0 ;i < 8; ++i)
-    {
-        if(!(0x80 & (val << i)))
-        {
-	  n = n->right;
-	} 
-	else
-	{
-	  n = n->left;
-	}
-	if(n->c)
-	{
-	  //printf("%c",n->c);
-	  target[charcount++] = n->c;
-	  if(charcount >= count ) break;
-          n = &root;
-	}
-    }
-    if(charcount >= count ) break;
-  } 
-  target[charcount] = 0;
-}
-
 static void MenuAppActionMsg(int item)
 {
 	tHostMsg* pOutgoingMsg;

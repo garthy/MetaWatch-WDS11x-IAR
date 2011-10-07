@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "HuffmanEngText.h"
-#if 1
+
 const struct node node111111 = {NULL, NULL, 'm'};
 const struct node node111110 = {NULL, NULL, 'w'};
 const struct node node11111 = {&node111111, &node111110, 0};
@@ -15,7 +15,7 @@ const struct node node1111001000 = {NULL, NULL, 'z'};
 const struct node node111100100 = {&node1111001001, &node1111001000, 0};
 const struct node node11110010 = {&node111100101, &node111100100, 0};
 const struct node node1111001 = {&node11110011, &node11110010, 0};
-const const struct node node1111000 = {NULL, NULL, 'v'};
+const struct node node1111000 = {NULL, NULL, 'v'};
 const struct node node111100 = {&node1111001, &node1111000, 0};
 const struct node node11110 = {&node111101, &node111100, 0};
 const struct node node1111 = {&node11111, &node11110, 0};
@@ -55,11 +55,11 @@ const struct node node000 = {&node0001, &node0000, 0};
 const struct node node00 = {&node001, &node000, 0};
 const struct node node0 = {&node01, &node00, 0};
 const struct node root = { &node1, &node0 };
-#endif
+
 /* decoded s to
  * target should be as big as (27*2)+1
  */
-#if 0
+
 void decode(char *s, int count, char *target)
 {
   char i;
@@ -92,13 +92,4 @@ void decode(char *s, int count, char *target)
   } 
   target[charcount] = 0;
 }
-#endif
-/*
-int main(void)
-{
-  unsigned char buf[28+1];
-  unsigned char s[] = {167, 89, 83, 133, 229, 115, 163, 3, 230, 252, 94, 129, 75, 241, 122, 221, 253,0};
-  decode(s, 28, &root, buf);
-  printf(buf);
 
-}*/
