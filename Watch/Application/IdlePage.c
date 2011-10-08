@@ -27,10 +27,23 @@ void IdlePageStop(struct IdlePage const * Page)
 	}
 }
 
+struct IdlePage const * CurrentPage = NULL;
+
 void IdlePageHandler(struct IdlePage const * Page)
 {
-	if(Page != NULL && Page->Handler != NULL)
+	if (Page != NULL && Page->Handler != NULL)
 	{
+		if (Page != CurrentPage)
+		{
+			if (CurrentPage != NULL && CurrentPage->Stop != NULL)
+			{
+				CurrentPage->Stop(&Info);
+			}
+			if (Page->Start != NULL)
+			{
+				Page->Start(&Info);
+			}
+		}
 		Page->Handler(&Info);
 	}
 }
