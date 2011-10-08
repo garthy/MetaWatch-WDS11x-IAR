@@ -91,7 +91,7 @@ static int IdlePageGameOfLifeHandler(struct IdleInfo *Info)
 	                      NO_MSG_OPTIONS);
     live(Info->buffer);
     StartOneSecondTimer(Info->IdleModeTimerId);
-    return 0;
+    return IDLE_UPDATE_FULL_SCREEN;
 }
 
 static void IdlePageGameOfLifeConfigButtons(struct IdleInfo *Info)

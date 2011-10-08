@@ -1,5 +1,5 @@
 [DebugChecksum]
-Checksum=-1659282741
+Checksum=1732427956
 [DisAssemblyWindow]
 NumStates=_ 1
 State 1=_ 1
@@ -24,7 +24,7 @@ Control Register=0
 NextState0=0
 NextState1=0
 [Action Register]
-Break=30
+Break=3
 State Storage=1
 [InterruptLog]
 LogEnabled=0
@@ -60,7 +60,7 @@ ShowArgs=0
 [Disassembly]
 MixedMode=1
 [Breakpoints]
-Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\Application\MenuApp.c}.90.3" 1 0 0 0 "" 0 ""
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\..\Application\LcdDisplay.c}.253.3" 1 0 0 0 "" 0 ""
 Count=1
 [FET]
 Clock mode=14

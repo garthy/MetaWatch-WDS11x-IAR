@@ -203,6 +203,6 @@ int IdlePageWatchStatusHandler(struct IdleInfo *Info)
 	                      NO_MSG_OPTIONS);
 
 	  StartOneSecondTimer(Info->IdleModeTimerId);
-          return 1;
+    return IDLE_UPDATE_FULL_SCREEN;
 }
 

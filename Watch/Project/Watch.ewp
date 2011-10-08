@@ -5154,6 +5154,15 @@
       <name>$PROJ_DIR$\..\Hardware\RTCASMFunctions_IAR.s43</name>
     </file>
   </group>
+  <file>
+    <name>$PROJ_DIR$\..\Application\IdlePageGameOfLife.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\..\Application\IdlePageListPairedDevices.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\..\Application\IdlePageListPairedDevices.h</name>
+  </file>
 </project>
 
 

@@ -58,7 +58,7 @@ void MenuAppStart(void)//unsigned char *paylxoad)
 		MenuApp.items[menuindex].u.itext.id = menuindex;
 		menuindex++;
 		ch = strchr(ch,' ');
-                if(ch==NULL) break;
+        if(ch==NULL) break;
 		*ch = 0;
 		//printf("item = %s\n", ch);
 		ch++;

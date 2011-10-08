@@ -73,7 +73,7 @@ unsigned char* GetTemplatePointer(unsigned char TemplateSelect);
 unsigned char QueryIdlePageNormal(void);
 
 /* the internal buffer */
-
+void SendMyBufferToLcd(unsigned char TotalRows);
 
 void StopAllDisplayTimers(void);
 

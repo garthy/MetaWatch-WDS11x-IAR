@@ -66,7 +66,6 @@ struct menu_item {
 #define MENU_ITEMS 5
 
 struct menu{
-	/*const struct menu *next;*/
 	struct menu_item items[MENU_ITEMS];
 };
 
@@ -100,9 +99,9 @@ struct menu{
 	.u.itext.action = actionfunc,\
     },
 
-#define MENU_MSG_BUTTON(msgid, option, picon, buttonpresstype, menuflags) \
+#define MENU_MSG_BUTTON(msgid, option, picon, menuflags) \
     { .type = menu_msg,\
-	.ButtonPressType = buttonpresstype, \
+	.ButtonPressType = BUTTON_STATE_IMMEDIATE, \
     .flags = menuflags, \
 	.u.imsg.msg = msgid,\
 	.u.imsg.Options = option,\

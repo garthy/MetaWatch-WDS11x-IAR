@@ -107,12 +107,14 @@ unsigned char const * menu_get_icon(struct menu_item const * item)
 
 int menu_handle_button(const struct menu_item *i)
 {
-  	switch(i->type)
+	tHostMsg* pOutgoingMsg;
+    switch(i->type)
 	{
 	case menu_msg:
-		// Nothing this should be handled by the framework
-        // In fact we should never get here!
-		// Hmm. I'm thinking this should be handled buy the framework
+		BPL_AllocMessageBuffer(&pOutgoingMsg);
+		pOutgoingMsg->Type = i->u.imsg.msg;
+		pOutgoingMsg->Options = i->u.imsg.Options;
+		RouteMsg(&pOutgoingMsg);
 		break;
 	case menu_menu:
 		if((i->flags & MENU_ITEM_MENU_PUSH) == MENU_ITEM_MENU_PUSH)
@@ -143,7 +145,7 @@ int menu_handle_button(const struct menu_item *i)
 	default:
 		break;
 	}
-        if((i->flags & MENU_FLAG_UPDATE) == MENU_FLAG_UPDATE)
+    if((i->flags & MENU_FLAG_UPDATE) == MENU_FLAG_UPDATE)
 	{
 		return 1;
 	}
@@ -214,8 +216,8 @@ void menu_config_buttons(void)
 		 EnableButtonAction(IDLE_MODE,
 				 index2buttonindex[i],
 				 m->items[i].ButtonPressType,
-				 m->items[i].type == menu_msg ? m->items[i].u.imsg.msg : MenuButtonMsg,
-				 m->items[i].type == menu_msg ? m->items[i].u.imsg.Options : index2buttonmsgoption[i]);
+				 MenuButtonMsg,
+				 index2buttonmsgoption[i]);
 	}
     EnableButtonAction(IDLE_MODE,
                        SW_C_INDEX,
@@ -272,6 +274,7 @@ static void DrawItem(struct menu_item const *item, unsigned char row, unsigned c
 void DrawMenu()
 {
   const struct menu * const menu = menu_current();
+  FillMyBuffer(STARTING_ROW,PHONE_IDLE_BUFFER_ROWS,0x00);
   DrawCommonMenuIcons();
   DrawItem(&(menu->items[0]), BUTTON_ICON_A_F_ROW,LEFT_BUTTON_COLUMN);
   DrawItem(&(menu->items[1]), BUTTON_ICON_B_E_ROW,LEFT_BUTTON_COLUMN);

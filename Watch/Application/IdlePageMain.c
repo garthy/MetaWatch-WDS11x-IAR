@@ -1,4 +1,16 @@
+#include <stddef.h>
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+
 #include "Messages.h"
+#include "BufferPool.h"
+#include "Buttons.h"
+#include "hal_lpm.h"
+#include "MessageQueues.h"
+#include "hal_board_type.h"
+#include "Messages.h" //IDLE_MODE + msgs
+#include "Buttons.h"  // BUTTON_STATE
 #include "hal_rtc.h"
 #include "hal_battery.h"
 #include "hal_lcd.h"
@@ -9,13 +21,37 @@
 #include "Icons.h"
 #include "Fonts.h"
 #include "Display.h"
+#include "LcdDisplay.h"
 #include "LcdBuffer.h"
 #include "Bluetooth.h"
+#include "IdlePage.h"
+
+
+
+
+
+static int IdleUpdateHandler(struct IdleInfo *Info);
+void IdlePageMainConfigButtons(struct IdleInfo *Info);
+const struct IdlePage IdlePageMain = {
+	.Start = NULL,
+	.Stop = NULL,
+	.Handler = IdleUpdateHandler,
+	.ConfigButtons = IdlePageMainConfigButtons, };
+
+
+unsigned char QueryIdlePageNormal(void)
+{
+  if ( IdlePageCurrent() == &IdlePageMain )
+  {
+    return 1;
+  }
+  return 0;  
+}
+
 
 const unsigned char Am[10*4];
 const unsigned char Pm[10*4];
 const unsigned char DaysOfWeek[7][10*4];
-
 
 static void DisplayAmPm(void);
 static void DisplayDayOfWeek(void);
@@ -349,6 +385,279 @@ void DrawSimpleIdleScreen(void)
 
   }
 
+}
+
+static void DrawConnectionScreen()
+{
+	unsigned char const* pSwash;
+	/* this is part of the idle update
+	 * timing is controlled by the idle update timer
+	 * buffer was already cleared when drawing the time
+	 */
+	etConnectionState cs = QueryConnectionState();
+	switch (cs)
+	{
+	case RadioOn:
+		if (QueryValidPairingInfo())
+		{
+			pSwash = pBootPageConnectionSwash;
+		}
+		else
+		{
+			pSwash = pBootPagePairingSwash;
+		}
+		break;
+	case Paired:
+		pSwash = pBootPageConnectionSwash;
+		break;
+	case Connected:
+		//pSwash = pBootPageConnectionSwash;
+		//break;
+		// Think we should do something here?
+		pSwash = pBootPageUnknownSwash;
+		break;
+	case Initializing:
+	case ServerFailure:
+	case RadioOff:
+	case RadioOffLowBattery:
+	case ShippingMode:
+	default:
+		pSwash = pBootPageBluetoothOffSwash;
+		break;
+	}
+
+  CopyRowsIntoMyBuffer(pSwash,WATCH_DRAWN_IDLE_BUFFER_ROWS+1,32);
+
+#ifdef XXFONT_TESTING
+
+  gRow = 65;
+  gColumn = 0;
+  gBitColumnMask = BIT0;
+
+  SetFont(MetaWatch5);
+  WriteFontString("Peanut Butter");
+
+  gRow = 72;
+  gColumn = 0;
+  gBitColumnMask = BIT0;
+
+  SetFont(MetaWatch7);
+  //WriteFontString("ABCDEFGHIJKLMNOP");
+  WriteFontString("Peanut Butter W");
+
+  gRow = 80;
+  gColumn = 0;
+  gBitColumnMask = BIT0;
+  SetFont(MetaWatch16);
+  WriteFontString("ABC pqr StuVw");
+
+#else
+
+  unsigned char row;
+  unsigned char col;
+
+  /* characters are 10h then add space of 2 lines */
+  row = 65;
+  col = 0;
+  col = WriteString(GetLocalBluetoothAddressString(),row,col,DONT_ADD_SPACE_AT_END);
+
+  /* add the firmware version */
+  row = 75;
+  col = 0;
+  col = WriteString("App",row,col,ADD_SPACE_AT_END);
+  col = WriteString(VERSION_STRING,row,col,ADD_SPACE_AT_END);
+
+  /* and the stack version */
+  row = 85;
+  col = 0;
+  col = WriteString("Stack",row,col,ADD_SPACE_AT_END);
+  col = WriteString(GetStackVersion(),row,col,ADD_SPACE_AT_END);
+
+#endif
+
+}
+
+
+
+static int IdleUpdateHandler(struct IdleInfo *Info)
+{
+	StopAllDisplayTimers();
+
+	/* select between 1 second and 1 minute */
+	int IdleUpdateTime;
+	if (GetDisplaySeconds())
+	{
+		IdleUpdateTime = ONE_SECOND;
+	}
+	else
+	{
+		IdleUpdateTime = ONE_SECOND * 60;
+	}
+
+	/* setup a timer to determine when to draw the screen again */
+	SetupOneSecondTimer(Info->IdleModeTimerId, IdleUpdateTime, REPEAT_FOREVER,
+			IdleUpdate, NO_MSG_OPTIONS);
+
+	StartOneSecondTimer(Info->IdleModeTimerId);
+
+	/* determine if the bottom of the screen should be drawn by the watch */
+	if (QueryFirstContact())
+	{
+		/*
+		 * immediately update the screen
+		 */
+		if (GetIdleBufferConfiguration() == WATCH_CONTROLS_TOP)
+		{
+			/* only draw watch part */
+			FillMyBuffer(STARTING_ROW, WATCH_DRAWN_IDLE_BUFFER_ROWS, 0x00);
+			DrawIdleScreen();
+			PrepareMyBufferForLcd(STARTING_ROW, WATCH_DRAWN_IDLE_BUFFER_ROWS);
+			SendMyBufferToLcd(WATCH_DRAWN_IDLE_BUFFER_ROWS);
+		}
+
+		/* now update the remainder of the display */
+		/*! make a dirty flag for the idle page drawn by the phone
+		 * set it whenever watch uses whole screen
+		 */
+		tHostMsg* pOutgoingMsg;
+		BPL_AllocMessageBuffer(&pOutgoingMsg);
+		pOutgoingMsg->Type = UpdateDisplay;
+		pOutgoingMsg->Options = IDLE_MODE | DONT_ACTIVATE_DRAW_BUFFER;
+		RouteMsg(&pOutgoingMsg);
+
+		return IDLE_UPDATE_TOP_ONLY;
+	}
+	FillMyBuffer(STARTING_ROW, NUM_LCD_ROWS, 0x00);
+	DrawSimpleIdleScreen();
+	DrawConnectionScreen();
+	return IDLE_UPDATE_FULL_SCREEN;
+}
+
+
+static void DontChangeButtonConfiguration(void)
+{
+  /* assign LED button to all modes */
+  for ( unsigned char i = 0; i < NUMBER_OF_MODES; i++ )
+  {
+    /* turn off led 3 seconds after button has been released */
+    EnableButtonAction(i,
+                       SW_D_INDEX,
+                       BUTTON_STATE_PRESSED,
+                       LedChange,
+                       LED_START_OFF_TIMER);
+    
+    /* turn on led immediately when button is pressed */
+    EnableButtonAction(i,
+                       SW_D_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       LedChange,
+                       LED_ON_OPTION);
+    
+    /* software reset is available in all modes */    
+    EnableButtonAction(i,
+                       SW_F_INDEX,
+                       BUTTON_STATE_LONG_HOLD,
+                       SoftwareResetMsg,
+                       MASTER_RESET_OPTION);
+  
+  }
+
+}
+
+
+void IdlePageMainConfigButtons(struct IdleInfo *Info)
+{
+
+	  //etConnectionState cs = QueryConnectionState();
+
+	  //switch (cs)
+	  //{
+	  //case Initializing:       CurrentIdlePage = BluetoothOffPage;              break;
+	  //case ServerFailure:      CurrentIdlePage = BluetoothOffPage;              break;
+	  //case RadioOn:            CurrentIdlePage = RadioOnWithoutPairingInfoPage; break;
+	  //case Paired:             CurrentIdlePage = RadioOnWithPairingInfoPage;    break;
+	  //case Connected:          CurrentIdlePage = NormalPage;                    break;
+	  //case RadioOff:           CurrentIdlePage = BluetoothOffPage;              break;
+	  //case RadioOffLowBattery: CurrentIdlePage = BluetoothOffPage;              break;
+	  //case ShippingMode:       CurrentIdlePage = BluetoothOffPage;              break;
+	  //default:                 CurrentIdlePage = BluetoothOffPage;              break;
+	etConnectionState cs = QueryConnectionState();
+	switch (cs)
+	{
+	case RadioOff:
+	case RadioOffLowBattery:
+	case ShippingMode:
+	case Initializing:
+	case ServerFailure:
+	case RadioOn:
+    EnableButtonAction(IDLE_MODE,
+                       SW_F_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       ModifyTimeMsg,
+                       MODIFY_TIME_INCREMENT_HOUR);
+
+    EnableButtonAction(IDLE_MODE,
+                       SW_E_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       ListPairedDevicesMsg,
+                       NO_MSG_OPTIONS);
+
+    DontChangeButtonConfiguration();
+
+    EnableButtonAction(IDLE_MODE,
+                       SW_C_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       MenuModeMsg,
+                       MENU_MODE_OPTION_PAGE1);
+
+    EnableButtonAction(IDLE_MODE,
+                       SW_B_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       ModifyTimeMsg,
+                       MODIFY_TIME_INCREMENT_DOW);
+
+    EnableButtonAction(IDLE_MODE,
+                       SW_A_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       ModifyTimeMsg,
+                       MODIFY_TIME_INCREMENT_MINUTE);
+    break;
+
+
+	case Paired:
+	case Connected:
+    EnableButtonAction(IDLE_MODE,
+                       SW_F_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       WatchStatusMsg,
+                       RESET_DISPLAY_TIMER);
+
+    EnableButtonAction(IDLE_MODE,
+                       SW_E_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       ListPairedDevicesMsg,
+                       NO_MSG_OPTIONS);
+
+    DontChangeButtonConfiguration();
+
+    EnableButtonAction(IDLE_MODE,
+                       SW_C_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       MenuModeMsg,
+                       MENU_MODE_OPTION_PAGE1);
+
+    EnableButtonAction(IDLE_MODE,
+                       SW_B_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       ToggleSecondsMsg,
+                       TOGGLE_SECONDS_OPTIONS_UPDATE_IDLE);
+
+    EnableButtonAction(IDLE_MODE,
+                       SW_A_INDEX,
+                       BUTTON_STATE_IMMEDIATE,
+                       BarCode,
+                       RESET_DISPLAY_TIMER);
+	}
 }
 
 

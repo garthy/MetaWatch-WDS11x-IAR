@@ -6,5 +6,7 @@ void InitializeDisplaySeconds(void);
 int GetDisplaySeconds(void);
 void ToggleSecondsHandler(void);
 
+extern const struct IdlePage IdlePageMain;
+
 
 #endif /* METAWATCH_IDLE_PAGE_MAIN_H */
